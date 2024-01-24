@@ -20,6 +20,8 @@ public class BaseEntity {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
-    public BaseEntity(){}
+    public BaseEntity(){
+        
+    }
 
 }

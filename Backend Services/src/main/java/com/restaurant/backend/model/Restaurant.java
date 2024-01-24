@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "restaurant")
 public class Restaurant {
     @Id
-    private int id;
+    private long id;
     @Column(name = "name")
     private String name;
     @Column(name = "address")

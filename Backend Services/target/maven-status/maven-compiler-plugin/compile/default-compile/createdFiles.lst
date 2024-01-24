@@ -1,0 +1,6 @@
+com/restaurant/backend/model/Restaurant.class
+com/restaurant/backend/model/BaseEntity.class
+com/restaurant/backend/BackendApplication.class
+com/restaurant/backend/model/Item_category.class
+com/restaurant/backend/model/Roles.class
+com/restaurant/backend/model/User.class

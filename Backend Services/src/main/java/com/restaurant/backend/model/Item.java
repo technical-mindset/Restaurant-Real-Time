@@ -3,6 +3,8 @@ package com.restaurant.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "item")
@@ -18,5 +20,7 @@ public class Item extends BaseEntity {
     private double price;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Item_category itemCategory;
+    @ManyToMany(mappedBy = "items")
+    private List<Deal> deals;
 
 }

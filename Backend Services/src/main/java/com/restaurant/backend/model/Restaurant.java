@@ -23,4 +23,6 @@ public class Restaurant {
     private int branch_code;
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<User> users = new ArrayList<>();
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Table_sitting> tableSitting = new ArrayList<>();
 }

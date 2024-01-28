@@ -17,7 +17,6 @@ public class Roles extends BaseEntity{
     private String name;
     @Column(name = "role_type", unique = true)
     private String role_type;
-    @ManyToMany
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @ManyToMany(mappedBy = "role")
     private List<User> user;
 }

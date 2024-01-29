@@ -25,4 +25,7 @@ public class Restaurant {
     private List<User> users = new ArrayList<>();
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TableSitting> tableSitting = new ArrayList<>();
+    @OneToOne(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Invoice invoice;
+
 }

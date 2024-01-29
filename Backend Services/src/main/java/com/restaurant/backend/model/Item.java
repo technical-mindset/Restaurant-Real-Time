@@ -3,6 +3,7 @@ package com.restaurant.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -22,5 +23,4 @@ public class Item extends BaseEntity {
     private Item_category itemCategory;
     @ManyToMany(mappedBy = "items")
     private List<Deal> deals;
-
 }

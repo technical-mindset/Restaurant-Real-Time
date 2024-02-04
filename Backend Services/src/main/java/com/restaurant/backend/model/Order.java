@@ -25,7 +25,9 @@ public class Order {
     private List<ItemOrder> itemOrders = new ArrayList<>();
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DealOrder> dealOrders = new ArrayList<>();
-
     @OneToOne(mappedBy = "order")
     private Invoice invoice;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "table_id")
+    private TableSitting tableSitting;
 }

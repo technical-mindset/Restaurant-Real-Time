@@ -12,8 +12,8 @@ public class Invoice {
     private long id;
     @Column(name = "payment_method")
     private String paymentMethod;
-    @Column(name = "tax_type")
-    private String taxType;
+    @Column(name = "tax")
+    private String tax;
     @OneToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;

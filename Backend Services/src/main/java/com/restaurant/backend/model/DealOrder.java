@@ -13,9 +13,9 @@ public class DealOrder {
     private long quantity;
     @Column(name = "price")
     private double price;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "deal_id")
-    private List<Deal> deals;
+    private Deal deals;
 
     // Many-to-one relationship with Order
     @ManyToOne(fetch = FetchType.LAZY)

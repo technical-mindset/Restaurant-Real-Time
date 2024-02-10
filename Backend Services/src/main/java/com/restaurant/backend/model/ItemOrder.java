@@ -17,9 +17,9 @@ public class ItemOrder extends BaseEntity {
     private long quantity;
     @Column(name = "price")
     private double price;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_id")
-    private List<Item> items;
+    private Item items;
 
     // Many-to-one relationship with Order
     @ManyToOne(fetch = FetchType.LAZY)

@@ -3,6 +3,7 @@ package com.restaurant.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,9 +21,11 @@ public class Deal extends BaseEntity {
     private double actual_price;
     @Column(name = "discounted_price")
     private double discounted_price;
-    @ManyToMany
-    @JoinTable(name = "item_deal_bridge", joinColumns = @JoinColumn(name = "deal_id"), inverseJoinColumns = @JoinColumn(name = "item_id"))
-    private List<Item> items;
+    @OneToMany(mappedBy = "deals", fetch = FetchType.LAZY)
+    private List<DealOrder> dealOrder = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "item_deal_bridge", joinColumns = {@JoinColumn(name = "deal_id")}, inverseJoinColumns = {@JoinColumn(name = "item_id")})
+    private List<Item> items = new ArrayList<>();
 
 
 }

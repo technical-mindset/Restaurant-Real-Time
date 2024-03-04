@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-public class TableSittingAdminDTO {
+public class TableSittingAdminDTO extends BaseDTO{
     private int tableCode;
     private boolean isReserved;
     private Restaurant restaurant;

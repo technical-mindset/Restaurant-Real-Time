@@ -28,7 +28,10 @@ public class ItemCategoryController {
             @RequestParam(value = "pageNumber", defaultValue = Constants.PAGE_NUMBER, required = false) int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = Constants.PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = Constants.SORT_BY, required = false) String sortBy){
-        return new ResponseEntity<>(this.itemCategoryService.getAllCategories(pageNumber, pageSize, sortBy), HttpStatus.OK);
+        String message = this.itemCategoryService.getAllCategories(pageNumber, pageSize,sortBy).getData().isEmpty() ? Constants.NO_DATA_FOUND : Constants.MESSAGE_FETCHED;
+        return new ResponseEntity<>(new ApiResponse(message,
+                this.itemCategoryService.getAllCategories(pageNumber, pageSize,sortBy), true
+        ), HttpStatus.OK);
     }
 
     // Add Case

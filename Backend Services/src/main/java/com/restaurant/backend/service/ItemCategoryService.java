@@ -2,6 +2,7 @@ package com.restaurant.backend.service;
 
 import com.restaurant.backend.dao.ItemCategoryRepository;
 import com.restaurant.backend.helper.ApiResponse;
+import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.Item_category;
 import com.restaurant.backend.payloads.ItemCategoryDTO;
 import com.restaurant.backend.utils.Constants;
@@ -37,21 +38,27 @@ public class ItemCategoryService {
     }
 
     // Get All Pageable Item Categories
-    public ApiResponse getAllCategories(int pageNumber, int pageSize, String sortBy) {
-        ApiResponse apiResponse;
+    public PaginationResponse getAllCategories(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
         Page page = this.itemCategoryRepository.findAll(pageable);
         List<Item_category> itemCategories = page.getContent();
 
-        if (page.isEmpty()) {
-            apiResponse = new ApiResponse(Constants.NO_DATA_FOUND, List.of(), false);
-        }
+        PaginationResponse paginationResponse = new PaginationResponse();
 
-        return apiResponse = new ApiResponse(Constants.MESSAGE_FETCHED, itemCategories
+        paginationResponse.setData(itemCategories
                 .stream()
                 .map(e -> this.modelMapper.map(e, ItemCategoryDTO.class))
-                .collect(Collectors.toList()), true);
+                .collect(Collectors.toList())
+        );
+
+        paginationResponse.setPageNumber(page.getNumber());
+        paginationResponse.setPageSize(page.getSize());
+        paginationResponse.setTotalElements(page.getTotalElements());
+        paginationResponse.setTotalPages(page.getTotalPages());
+        paginationResponse.setLastPage(page.isLast());
+
+        return paginationResponse;
 
     }
 }

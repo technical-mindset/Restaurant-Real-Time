@@ -19,7 +19,7 @@ public class Constants {
     public static final String MESSAGE_DELETED = "Deleted Successfully!";
 
     // -----------  ---------  Request URI --------- ----------
-    public static final String ADD_UPDATE_URI = "addUpdate";
+    public static final String ADD_UPDATE_URI = "/addUpdate";
     public static final String ITEM_CATEGORY_URI = "/itemcategory";
 
     // ----------  ---------- No Data Found -------- -----------

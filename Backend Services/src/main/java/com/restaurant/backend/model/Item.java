@@ -20,7 +20,7 @@ public class Item extends BaseEntity {
     @Column(name = "price")
     private double price;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Item_category itemCategory;
+    private ItemCategory itemCategory;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
     private List<Deal> deals = new ArrayList<>();
 //    @OneToMany(mappedBy = "items", fetch = FetchType.LAZY)

@@ -1,11 +1,10 @@
 package com.restaurant.backend.service;
 
 import com.restaurant.backend.dao.ItemCategoryRepository;
-import com.restaurant.backend.helper.ApiResponse;
+import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.PaginationResponse;
-import com.restaurant.backend.model.Item_category;
+import com.restaurant.backend.model.ItemCategory;
 import com.restaurant.backend.payloads.ItemCategoryDTO;
-import com.restaurant.backend.utils.Constants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,12 +26,12 @@ public class ItemCategoryService {
 
     // Add Category
     public ItemCategoryDTO addCategory(ItemCategoryDTO itemCategoryDTO){
-        Item_category itemCategory = this.modelMapper.map(itemCategoryDTO, Item_category.class);
+        ItemCategory itemCategory = this.modelMapper.map(itemCategoryDTO, ItemCategory.class);
         itemCategory.setCreatedBy("Zaidi");
         itemCategory.setUpdatedBy("Asad Zaidi");
         itemCategory.setCreatedAt(LocalDateTime.now());
         itemCategory.setUpdatedAt(LocalDateTime.now());
-        Item_category itemCategory1 = itemCategoryRepository.save(itemCategory);
+        ItemCategory itemCategory1 = itemCategoryRepository.save(itemCategory);
         ItemCategoryDTO itemCategoryDTO1 = this.modelMapper.map(itemCategory1, ItemCategoryDTO.class);
         return  itemCategoryDTO1;
     }
@@ -42,7 +41,7 @@ public class ItemCategoryService {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
         Page page = this.itemCategoryRepository.findAll(pageable);
-        List<Item_category> itemCategories = page.getContent();
+        List<ItemCategory> itemCategories = page.getContent();
 
         PaginationResponse paginationResponse = new PaginationResponse();
 
@@ -60,5 +59,30 @@ public class ItemCategoryService {
 
         return paginationResponse;
 
+    }
+
+    // Update category case
+    public ItemCategoryDTO updateCategory(ItemCategoryDTO itemCategoryDTO){
+        ItemCategory itemCategory = this.itemCategoryRepository.findById(itemCategoryDTO.getId())
+                .orElseThrow(() -> new ResourceNotFound("Item Category", "'Item Id'", itemCategoryDTO.getId()));
+
+        // converting the Model to DTO for update the changes in DTO
+        ItemCategoryDTO itemCategoryDto = this.modelMapper.map(itemCategory, ItemCategoryDTO.class);
+        itemCategoryDto.setName(itemCategoryDTO.getName());
+        itemCategoryDto.setDescription(itemCategoryDTO.getDescription());
+        itemCategoryDto.setUpdatedBy("Asad Zaidi");
+        itemCategoryDto.setUpdatedAt(LocalDateTime.now());
+
+        // converting the DTO to Model after updating the changes in DTO required
+        ItemCategory item_category = this.modelMapper.map(itemCategoryDto, ItemCategory.class);
+        return this.modelMapper.map(this.itemCategoryRepository.save(item_category), ItemCategoryDTO.class);
+
+    }
+
+    public void deleteCategory(ItemCategoryDTO itemCategoryDTO){
+        ItemCategory itemCategory = this.itemCategoryRepository
+                .findById(itemCategoryDTO.getId())
+                .orElseThrow(() -> new ResourceNotFound("Item Category",
+                        "'Item Id'", itemCategoryDTO.getId()));
     }
 }

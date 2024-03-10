@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "item_category")
-public class Item_category extends BaseEntity {
+public class ItemCategory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

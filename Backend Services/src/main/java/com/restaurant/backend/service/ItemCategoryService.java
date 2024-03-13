@@ -1,10 +1,12 @@
 package com.restaurant.backend.service;
 
 import com.restaurant.backend.dao.ItemCategoryRepository;
+import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.ItemCategory;
 import com.restaurant.backend.payloads.ItemCategoryDTO;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ItemCategoryService {
     @Autowired
     private ItemCategoryRepository itemCategoryRepository;
@@ -26,6 +29,13 @@ public class ItemCategoryService {
 
     // Add Category
     public ItemCategoryDTO addCategory(ItemCategoryDTO itemCategoryDTO){
+        
+        if (this.itemCategoryRepository.findById(itemCategoryDTO.getId()).isPresent() ) {
+            throw new ResourceExist("Item Category","Id", itemCategoryDTO.getId());
+        }
+        else if (this.itemCategoryRepository.findByName(itemCategoryDTO.getName()).isPresent() ) {
+            throw new ResourceExist("Item Category","Name", itemCategoryDTO.getName());
+        }
         ItemCategory itemCategory = this.modelMapper.map(itemCategoryDTO, ItemCategory.class);
         itemCategory.setCreatedBy("Zaidi");
         itemCategory.setUpdatedBy("Asad Zaidi");

@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
 @RestController
 @RequestMapping(Constants.ITEM_CATEGORY_URI)
 public class ItemCategoryController {

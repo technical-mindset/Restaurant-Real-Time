@@ -21,6 +21,7 @@ public class Constants {
     // -----------  ---------  Request URI --------- ----------
     public static final String ADD_UPDATE_URI = "/addUpdate";
     public static final String ITEM_CATEGORY_URI = "/itemcategory";
+    public static final String ITEM_URI = "/item";
 
     // ----------  ---------- No Data Found -------- -----------
     public static final String NO_DATA_FOUND = "No Data Found :(";

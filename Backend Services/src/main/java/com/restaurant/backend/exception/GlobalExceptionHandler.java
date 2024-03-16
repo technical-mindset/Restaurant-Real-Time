@@ -14,6 +14,6 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(ResourceExist.class)
     public ResponseEntity<ApiResponse> resourceExistExceptionHandler(ResourceExist resourceExist){
-        return new ResponseEntity<ApiResponse>(new ApiResponse(resourceExist.getMessage(),"", false), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<ApiResponse>(new ApiResponse(resourceExist.getMessage(),"", false), HttpStatus.CONFLICT);
     }
 }

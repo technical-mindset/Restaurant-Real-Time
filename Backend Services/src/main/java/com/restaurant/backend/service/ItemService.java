@@ -1,33 +1,130 @@
 package com.restaurant.backend.service;
 
 
+import com.restaurant.backend.dao.ItemCategoryRepository;
 import com.restaurant.backend.dao.ItemRepository;
+import com.restaurant.backend.exception.ResourceExist;
+import com.restaurant.backend.exception.ResourceNotFound;
+import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.Item;
+import com.restaurant.backend.model.ItemCategory;
 import com.restaurant.backend.payloads.ItemDTO;
-import org.modelmapper.ModelMapper;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class ItemService {
+@Transactional
+public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     @Autowired
     private ItemRepository itemRepository;
     @Autowired
-    private ModelMapper modelMapper;
+    private ItemCategoryRepository itemCategoryRepository;
+
+    public ItemService(ItemRepository repository) {
+        super(repository);
+    }
+
 
     // Add Item
-    public ItemDTO addItem(ItemDTO ItemDTO){
-        ItemDTO.setCreatedBy("Zaidi");
-        ItemDTO.setUpdatedBy("Asad Zaidi");
-        ItemDTO.setCreatedAt(LocalDateTime.now());
-        ItemDTO.setUpdatedAt(LocalDateTime.now());
+    public ItemDTO addItem(ItemDTO itemDTO){
 
-        Item Item = this.modelMapper.map(ItemDTO, Item.class);
-        Item Item1 = itemRepository.save(Item);
-        ItemDTO ItemDTO1 = this.modelMapper.map(Item1, ItemDTO.class);
+        if (this.itemRepository.findById(itemDTO.getId()).isPresent()) {
+            throw new ResourceExist("Item", "Id", itemDTO.getId());
+        }
+        else if (this.itemRepository.findByName(itemDTO.getName()).isPresent()) {
+            throw new ResourceExist("Item", "Name", itemDTO.getName());
+        }
+        Item item = this.mapDtoToEntity(itemDTO);
 
-        return  ItemDTO1;
+        Item item0 = this.itemRepository.save(item);
+        return  this.mapEntityToDto(item0);
+    }
+
+
+    // Update Item
+    public ItemDTO updateItem(ItemDTO itemDTO){
+
+        Item item = this.itemRepository.findById(itemDTO.getId())
+                .orElseThrow(() -> new ResourceNotFound("Item", "'Item Id'", itemDTO.getId()));
+
+        itemDTO.setCreatedAt(item.getCreatedAt());
+        itemDTO.setCreatedBy(item.getCreatedBy());
+
+        Item item0 = this.mapDtoToEntity(itemDTO);
+        Item items = this.itemRepository.save(item0);
+
+        return this.mapEntityToDto(items);
+    }
+
+
+    // Get All Pageable Item Categories
+    public PaginationResponse getAllItems(int pageNumber, int pageSize, String sortBy) {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+        Page page = this.itemRepository.findAll(pageable);
+        List<Item> items = page.getContent();
+
+        return this.pageToPagination(items, page);
+
+    }
+
+
+    // Delete item
+    public void deleteItem(long id){
+        Item item = this.itemRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFound("Item",
+                        "Item Id", id));
+        this.itemRepository.delete(item);
+    }
+
+
+
+    // -------------- Over Ride Methods -------------------
+    @Override
+    public ItemDTO mapEntityToDto(Item entity) {
+        ItemDTO itemDTO = new ItemDTO();
+        BeanUtils.copyProperties(entity, itemDTO);
+
+        itemDTO.setItemCategory(entity.getItemCategory().getId());
+        itemDTO.setCreatedAt(entity.getCreatedAt());
+        itemDTO.setCreatedBy(entity.getCreatedBy());
+        itemDTO.setUpdatedAt(entity.getUpdatedAt());
+        itemDTO.setUpdatedBy(entity.getUpdatedBy());
+        return itemDTO;
+    }
+
+    @Override
+    public Item mapDtoToEntity(ItemDTO dto) {
+        Item entity = new Item();
+        BeanUtils.copyProperties(dto, entity);
+
+        ItemCategory itemCategory = this.itemCategoryRepository.findById(dto.getItemCategory())
+                .orElseThrow(() -> new ResourceNotFound("ItemCategory", "id", dto.getItemCategory()));
+        entity.setItemCategory(itemCategory);
+
+        if (dto.getId() > 0) {
+            entity.setCreatedAt(dto.getCreatedAt());
+            entity.setCreatedBy(dto.getCreatedBy());
+            entity.setUpdatedBy("Zaidi");
+        }
+        else {
+            entity.setCreatedAt(LocalDateTime.now());
+            entity.setCreatedBy("Ali Akbar");
+            entity.setUpdatedBy("Ali Akbar");
+
+        }
+        entity.setUpdatedAt(LocalDateTime.now());
+
+        return entity;
     }
 }

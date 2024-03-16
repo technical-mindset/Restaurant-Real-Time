@@ -19,5 +19,5 @@ public class ItemDTO extends BaseDTO{
     private double price;
 
     // takes only item category id;
-    private Integer itemCategory;
+    private long itemCategory;
 }

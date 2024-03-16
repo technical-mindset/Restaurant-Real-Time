@@ -16,10 +16,18 @@ public class ItemController {
     private ItemService itemService;
 
     // Get all items
-//    @GetMapping
-//    public ResponseEntity<ApiResponse> getAllItems(){
-//
-//    }
+    @GetMapping
+    public ResponseEntity<ApiResponse> getAllItems(
+            @RequestParam(value = "pageNumber", defaultValue = Constants.PAGE_NUMBER, required = false) int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = Constants.PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = Constants.SORT_BY, required = false) String sortBy){
+
+        String message = this.itemService.getAllItems(pageNumber, pageSize,sortBy).getData().isEmpty() ? Constants.NO_DATA_FOUND : Constants.MESSAGE_FETCHED;
+        return new ResponseEntity<>(new ApiResponse(message,
+                this.itemService.getAllItems(pageNumber, pageSize,sortBy), true
+        ), HttpStatus.OK);
+
+    }
 
     // Add Item
     @PostMapping(Constants.ADD_UPDATE_URI)
@@ -27,5 +35,21 @@ public class ItemController {
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
                 this.itemService.addItem(itemDTO),
                 true), HttpStatus.OK);
+    }
+
+    // Update Item
+    @PutMapping(Constants.ADD_UPDATE_URI)
+    public ResponseEntity<ApiResponse> updateItem(@RequestBody ItemDTO itemDTO){
+        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
+                this.itemService.updateItem(itemDTO),
+                true), HttpStatus.OK);
+    }
+
+    // Delete Item
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteItem(@PathVariable("id") long id){
+        this.itemService.deleteItem(id);
+      return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED,
+                "", true), HttpStatus.OK);
     }
 }

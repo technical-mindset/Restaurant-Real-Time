@@ -2,11 +2,14 @@ package com.restaurant.backend.model;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "item_category")
 public class ItemCategory extends BaseEntity {
@@ -19,6 +22,6 @@ public class ItemCategory extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "itemCategory", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "itemCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Item> items;
 }

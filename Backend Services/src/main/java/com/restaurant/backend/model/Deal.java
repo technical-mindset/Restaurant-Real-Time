@@ -23,7 +23,7 @@ public class Deal extends BaseEntity {
     private double discounted_price;
     @OneToMany(mappedBy = "deals", fetch = FetchType.LAZY)
     private List<DealOrder> dealOrder = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(name = "item_deal_bridge", joinColumns = {@JoinColumn(name = "deal_id")}, inverseJoinColumns = {@JoinColumn(name = "item_id")})
     private List<Item> items = new ArrayList<>();
 

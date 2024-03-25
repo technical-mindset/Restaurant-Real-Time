@@ -25,7 +25,7 @@ public class Item extends BaseEntity {
     @JoinColumn(name = "item_category_id")
     private ItemCategory itemCategory;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items", cascade = CascadeType.REMOVE)
     private List<Deal> deals = new ArrayList<>();
 //    @OneToMany(mappedBy = "items", fetch = FetchType.LAZY)
 //    private List<ItemOrder> itemOrders = new ArrayList<>();

@@ -14,8 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-public class TableSittingAdminDTO extends BaseDTO{
+public class TableSittingAdminDTO extends BaseDTO {
+    private long id;
     private int tableCode;
     private boolean isReserved;
-    private Restaurant restaurant;
+    private long restaurantId;
 }

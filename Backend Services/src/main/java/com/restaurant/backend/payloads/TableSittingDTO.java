@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class TableSittingDTO {
+public class TableSittingDTO extends BaseDTO {
     private long id;
     private boolean isReserved;
 }

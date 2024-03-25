@@ -54,10 +54,10 @@ public class ItemCategoryController {
     }
 
     // Delete case
-    @DeleteMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> deleteCategory(@RequestBody ItemCategoryDTO itemCategoryDTO){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable("id") long id){
 
-        this.itemCategoryService.deleteCategory(itemCategoryDTO);
+        this.itemCategoryService.deleteCategory(id);
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, List.of(), true), HttpStatus.OK);
 
     }

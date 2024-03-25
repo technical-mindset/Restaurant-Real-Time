@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class OrderDTO {
+public class OrderDTO extends BaseDTO {
     private long id;
     private double bill;
     private long tableSitting;

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -92,15 +92,11 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     // -------------- Over Ride Methods -------------------
     @Override
     public ItemDTO mapEntityToDto(Item entity) {
-        ItemDTO itemDTO = new ItemDTO();
-        BeanUtils.copyProperties(entity, itemDTO);
+        ItemDTO dto = new ItemDTO();
+        BeanUtils.copyProperties(entity, dto);
 
-        itemDTO.setItemCategory(entity.getItemCategory().getId());
-        itemDTO.setCreatedAt(entity.getCreatedAt());
-        itemDTO.setCreatedBy(entity.getCreatedBy());
-        itemDTO.setUpdatedAt(entity.getUpdatedAt());
-        itemDTO.setUpdatedBy(entity.getUpdatedBy());
-        return itemDTO;
+        dto.setItemCategory(entity.getItemCategory().getId());
+        return dto;
     }
 
     @Override

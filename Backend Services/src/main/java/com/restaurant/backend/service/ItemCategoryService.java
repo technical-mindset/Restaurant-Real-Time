@@ -74,11 +74,12 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
 
 
     // Delete category case
-    public void deleteCategory(ItemCategoryDTO itemCategoryDTO){
+    public void deleteCategory(long id){
         ItemCategory itemCategory = this.itemCategoryRepository
-                .findById(itemCategoryDTO.getId())
+                .findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Item Category",
-                        "'Item Id'", itemCategoryDTO.getId()));
+                        "'Item Id'", id));
+        this.itemCategoryRepository.delete(itemCategory);
     }
 
     @Override

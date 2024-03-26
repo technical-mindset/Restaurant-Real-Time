@@ -37,11 +37,7 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
 
     // Add Item
     public ItemDTO addItem(ItemDTO itemDTO){
-
-        if (this.itemRepository.findById(itemDTO.getId()).isPresent()) {
-            throw new ResourceExist("Item", "Id", itemDTO.getId());
-        }
-        else if (this.itemRepository.findByName(itemDTO.getName()).isPresent()) {
+         if (this.itemRepository.findByName(itemDTO.getName()).isPresent()) {
             throw new ResourceExist("Item", "Name", itemDTO.getName());
         }
         Item item = this.mapDtoToEntity(itemDTO);

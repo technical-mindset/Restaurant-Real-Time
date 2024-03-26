@@ -4,11 +4,14 @@ import com.restaurant.backend.dao.OrderRepository;
 import com.restaurant.backend.dao.TableSittingRepository;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.ApiResponse;
+import com.restaurant.backend.model.Item;
 import com.restaurant.backend.model.Order;
 import com.restaurant.backend.model.TableSitting;
+import com.restaurant.backend.payloads.ItemDTO;
 import com.restaurant.backend.payloads.OrderDTO;
 import com.restaurant.backend.utils.Constants;
 import jakarta.transaction.Transactional;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,14 +57,34 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
 
     // Add case
     public OrderDTO addOrder(OrderDTO dto){
-       Order entity = this.mapDtoToEntity(dto);
+       Order order = this.mapDtoToEntity(dto);
 
+       Order entity = this.orderRepository.save(order);
+       return this.mapEntityToDto(entity);
     }
 
+    // Update case
+    public OrderDTO updateItem(OrderDTO dto){
 
+        Order order = this.orderRepository.findById(dto.getId())
+                .orElseThrow(() -> new ResourceNotFound("Order", "'Id'", dto.getId()));
 
+        dto.setCreatedAt(order.getCreatedAt());
+        dto.setCreatedBy(order.getCreatedBy());
 
+        Order order0 = this.mapDtoToEntity(dto);
+        Order entity = this.orderRepository.save(order0);
 
+        return this.mapEntityToDto(entity);
+    }
+
+    // Delete case
+    public void deleteItem(long id){
+        Order order = this.orderRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFound("Order",
+                        "Id", id));
+        this.orderRepository.delete(order);
+    }
 
 
 

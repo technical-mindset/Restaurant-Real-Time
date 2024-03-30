@@ -109,11 +109,11 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
         BeanUtils.copyProperties(dto, entity);
 
         List<Item> items = this.itemRepository.findAllById(dto.getItems());
-        entity.setItems(items);
 
         if (items.isEmpty()) {
             throw new ResourceNotFound("Items", "Ids", dto.getItems());
         }
+        entity.setItems(items);
 
         if (dto.getId() > 0) {
             entity.setCreatedAt(dto.getCreatedAt());

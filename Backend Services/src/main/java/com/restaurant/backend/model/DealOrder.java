@@ -5,7 +5,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "deal_order")
-public class DealOrder {
+public class DealOrder extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -13,7 +13,7 @@ public class DealOrder {
     private long quantity;
     @Column(name = "price")
     private double price;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "deal_id")
     private Deal deals;
 

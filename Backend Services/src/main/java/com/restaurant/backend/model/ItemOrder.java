@@ -14,8 +14,10 @@ public class ItemOrder extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "quantity")
+    private int quantity;
+    @Column(name = "price")
     private double price;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "item_id")
     private Item item;
 

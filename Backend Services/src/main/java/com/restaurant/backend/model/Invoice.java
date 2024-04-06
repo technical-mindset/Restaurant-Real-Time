@@ -3,6 +3,8 @@ package com.restaurant.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @Table(name = "invoice")
@@ -14,11 +16,11 @@ public class Invoice {
     private String paymentMethod;
     @Column(name = "tax")
     private String tax;
-    @OneToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+    @Column(name = "createdBy")
+    private String createdBy;
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
 }

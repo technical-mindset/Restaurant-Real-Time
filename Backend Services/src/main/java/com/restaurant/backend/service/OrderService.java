@@ -1,15 +1,11 @@
 package com.restaurant.backend.service;
 
-import com.restaurant.backend.dao.DealOrderRepository;
 import com.restaurant.backend.dao.OrderRepository;
 import com.restaurant.backend.dao.TableSittingRepository;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.ApiResponse;
 import com.restaurant.backend.model.*;
-import com.restaurant.backend.payloads.CompileOrderDTO;
-import com.restaurant.backend.payloads.DealOrderDTO;
-import com.restaurant.backend.payloads.ItemOrderDTO;
-import com.restaurant.backend.payloads.OrderDTO;
+import com.restaurant.backend.payloads.*;
 import com.restaurant.backend.utils.Constants;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +29,7 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
     private ItemOrderService itemOrderService;
     @Autowired
     private DealOrderService dealOrderService;
+
     public OrderService(OrderRepository repository) {
         super(repository);
     }
@@ -63,6 +60,9 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
 
     // Get case
     public CompileOrderDTO getOrderById(long id){
+
+
+
         Order order = this.repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Order", "Id", id));
 
@@ -126,6 +126,11 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
                 .map(e->this.itemOrderService.updateItemOrder(e, entity.getId()))
                 .collect(Collectors.toList());
 
+        List<DealOrderDTO> dealOrder = dto.getDealOrder()
+                .stream()
+                .map(e->this.dealOrderService.updateDealOrder(e, entity.getId()))
+                .collect(Collectors.toList());
+
         return this.mapEntityToDto(entity);
     }
 
@@ -136,35 +141,6 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
                         "Id", id));
         this.repository.delete(order);
     }
-
-    public DealOrderDTO mapEntityToDtoDeal(DealOrder entity) {
-        DealOrderDTO dto = new DealOrderDTO();
-        BeanUtils.copyProperties(entity, dto);
-
-        dto.setOrder(entity.getOrder().getId());
-        return dto;
-    }
-
-
-    public DealOrder mapDtoToEntityDeal(DealOrderDTO dto, long orderId) {
-        DealOrder entity = new DealOrder();
-        BeanUtils.copyProperties(dto, entity);
-
-        Order order = this.repository.findById(orderId)
-                        .orElseThrow(() -> new ResourceNotFound("Order","Id", orderId));
-        entity.setOrder(order);
-
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
-            entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
-        }
-        return entity;
-    }
-
 
     // -------------- Over Ride Methods -------------------
 

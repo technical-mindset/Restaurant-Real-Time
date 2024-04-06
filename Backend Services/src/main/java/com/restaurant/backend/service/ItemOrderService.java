@@ -23,8 +23,6 @@ import java.util.List;
 @Service
 public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemOrderRepository> {
     @Autowired
-    private ItemOrderRepository repository;
-    @Autowired
     private ItemRepository itemRepo;
     @Autowired
     private OrderRepository orderRepo;
@@ -32,6 +30,7 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
     public ItemOrderService(ItemOrderRepository repository) {
         super(repository);
     }
+
 
     // Add Case
     public ItemOrderDTO addItemOrder(ItemOrderDTO dto, long id){

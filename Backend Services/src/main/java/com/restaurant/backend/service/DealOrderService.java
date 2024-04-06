@@ -32,6 +32,7 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
 
     // Add Case
     public DealOrderDTO addDealOrder(DealOrderDTO dto, long id){
+        System.out.println("Deal ------- Order");
         if (this.repository.findById(dto.getId()).isPresent()) {
             throw new ResourceExist("Deal-Order", "Id", dto.getId());
         }
@@ -43,7 +44,7 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
     }
 
     // Update case
-    public DealOrderDTO updateItemOrder(DealOrderDTO dto, long id){
+    public DealOrderDTO updateDealOrder(DealOrderDTO dto, long id){
         dto.setOrder(id);
 
         if (this.repository.findById(dto.getId()).isPresent()) {

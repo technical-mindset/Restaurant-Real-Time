@@ -9,12 +9,12 @@ public class DealOrder extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "quantity")
-    private long quantity;
-    @Column(name = "price")
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
+    @Column(name = "price", nullable = false)
     private double price;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "deal_id")
+    @JoinColumn(name = "deal_id", nullable = false)
     private Deal deals;
 
     // Many-to-one relationship with Order

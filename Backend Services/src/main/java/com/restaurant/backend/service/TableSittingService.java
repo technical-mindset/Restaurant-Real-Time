@@ -24,8 +24,6 @@ import java.util.List;
 @Service
 public class TableSittingService extends BaseService<TableSitting, TableSittingAdminDTO, TableSittingRepository> {
     @Autowired
-    private TableSittingRepository tableSittingRepository;
-    @Autowired
     private RestuarantRepositroy restuarantRepositroy;
 
 
@@ -39,7 +37,7 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
     public PaginationResponse getAllTables(int pageNumber, int pageSize, String sortBy){
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.tableSittingRepository.findAll(pageable);
+        Page page = this.repository.findAll(pageable);
         List<TableSitting> tables = page.getContent();
 
        return this.pageToPagination(tables, page);
@@ -48,7 +46,7 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
 
     // Update case: for placing order
     public TableSittingDTO isReserved(TableSittingDTO dto){
-        TableSitting tableSitting = this.tableSittingRepository.findById(dto.getId())
+        TableSitting tableSitting = this.repository.findById(dto.getId())
                 .orElseThrow(()-> new ResourceNotFound("Table", "Id", dto.getId()));
 
         // setting the reserved flag as true or false
@@ -62,45 +60,45 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
 
     // =========================== Methods for admin use only ===========================
     public TableSittingAdminDTO addTable(TableSittingAdminDTO dto){
-        if (this.tableSittingRepository.findById(dto.getId()).isPresent()) {
+        if (this.repository.findById(dto.getId()).isPresent()) {
             throw new ResourceExist("Table", "Id", dto.getId());
         }
-        else if (this.tableSittingRepository.findByTableCode(dto.getTableCode()).isPresent()) {
+        else if (this.repository.findByTableCode(dto.getTableCode()).isPresent()) {
             throw new ResourceExist("Table", "code", dto.getTableCode());
         }
         TableSitting table = this.mapDtoToEntity(dto);
         System.out.println(table.getTableCode());
         System.out.println(table.getRestaurant().getCity());
 
-        TableSitting tableSitting = this.tableSittingRepository.save(table);
+        TableSitting tableSitting = this.repository.save(table);
         return  this.mapEntityToDto(tableSitting);
     }
 
 
     // update case
     public TableSittingAdminDTO updateTable(TableSittingAdminDTO dto){
-        if (this.tableSittingRepository.findByTableCode(dto.getTableCode()).isPresent()) {
+        if (this.repository.findByTableCode(dto.getTableCode()).isPresent()) {
             throw new ResourceExist("Table", "code", dto.getTableCode());
         }
 
-        TableSitting tableSitting = this.tableSittingRepository.findById(dto.getId())
+        TableSitting tableSitting = this.repository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFound("Table", "Id", dto.getId()));
 
         dto.setCreatedAt(tableSitting.getCreatedAt());
         dto.setCreatedBy(tableSitting.getCreatedBy());
 
         TableSitting table = this.mapDtoToEntity(dto);
-        TableSitting sitting = this.tableSittingRepository.save(table);
+        TableSitting sitting = this.repository.save(table);
         return this.mapEntityToDto(sitting);
     }
 
 
     // delete case
     public void deleteTable(long id){
-        TableSitting tableSitting = this.tableSittingRepository.findById(id)
+        TableSitting tableSitting = this.repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Table", "Id", id));
 
-        this.tableSittingRepository.delete(tableSitting);
+        this.repository.delete(tableSitting);
     }
 
 

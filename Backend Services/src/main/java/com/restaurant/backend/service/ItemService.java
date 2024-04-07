@@ -26,8 +26,6 @@ import java.util.List;
 @Transactional
 public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     @Autowired
-    private ItemRepository itemRepository;
-    @Autowired
     private ItemCategoryRepository itemCategoryRepository;
 
     public ItemService(ItemRepository repository) {
@@ -37,16 +35,12 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
 
     // Add Item
     public ItemDTO addItem(ItemDTO itemDTO){
-
-        if (this.itemRepository.findById(itemDTO.getId()).isPresent()) {
-            throw new ResourceExist("Item", "Id", itemDTO.getId());
-        }
-        else if (this.itemRepository.findByName(itemDTO.getName()).isPresent()) {
+         if (this.repository.findByName(itemDTO.getName()).isPresent()) {
             throw new ResourceExist("Item", "Name", itemDTO.getName());
         }
         Item item = this.mapDtoToEntity(itemDTO);
 
-        Item item0 = this.itemRepository.save(item);
+        Item item0 = this.repository.save(item);
         return  this.mapEntityToDto(item0);
     }
 
@@ -54,14 +48,14 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     // Update Item
     public ItemDTO updateItem(ItemDTO itemDTO){
 
-        Item item = this.itemRepository.findById(itemDTO.getId())
+        Item item = this.repository.findById(itemDTO.getId())
                 .orElseThrow(() -> new ResourceNotFound("Item", "'Item Id'", itemDTO.getId()));
 
         itemDTO.setCreatedAt(item.getCreatedAt());
         itemDTO.setCreatedBy(item.getCreatedBy());
 
         Item item0 = this.mapDtoToEntity(itemDTO);
-        Item items = this.itemRepository.save(item0);
+        Item items = this.repository.save(item0);
 
         return this.mapEntityToDto(items);
     }
@@ -71,20 +65,19 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     public PaginationResponse getAllItems(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.itemRepository.findAll(pageable);
+        Page page = this.repository.findAll(pageable);
         List<Item> items = page.getContent();
 
         return this.pageToPagination(items, page);
-
     }
 
 
     // Delete item
     public void deleteItem(long id){
-        Item item = this.itemRepository.findById(id)
+        Item item = this.repository.findById(id)
                 .orElseThrow(()-> new ResourceNotFound("Item",
                         "Item Id", id));
-        this.itemRepository.delete(item);
+        this.repository.delete(item);
     }
 
 

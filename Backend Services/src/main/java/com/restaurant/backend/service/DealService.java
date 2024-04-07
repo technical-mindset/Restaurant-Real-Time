@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     @Autowired
-    private DealRepository dealRepository;
-    @Autowired
     private ItemRepository itemRepository;
 
     public DealService(DealRepository repository) {
@@ -37,7 +35,7 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     // Add case
     public DealDTO addDeal(DealDTO dealDTO){
 
-        if (this.dealRepository.findById(dealDTO.getId()).isPresent()) {
+        if (this.repository.findById(dealDTO.getId()).isPresent()) {
             throw new ResourceExist("Deal", "Id", dealDTO.getId());
         }
         else if (this.itemRepository.findByName(dealDTO.getName()).isPresent()) {
@@ -45,7 +43,7 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
         }
         Deal deal = this.mapDtoToEntity(dealDTO);
 
-        Deal deal0 = this.dealRepository.save(deal);
+        Deal deal0 = this.repository.save(deal);
         return  this.mapEntityToDto(deal0);
 
     }
@@ -54,14 +52,14 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     // Update case
     public DealDTO updateDeal(DealDTO dealDTO){
 
-        Deal deal = this.dealRepository.findById(dealDTO.getId())
+        Deal deal = this.repository.findById(dealDTO.getId())
                 .orElseThrow(() -> new ResourceNotFound("Deal", "'deal Id'", dealDTO.getId()));
 
         dealDTO.setCreatedAt(deal.getCreatedAt());
         dealDTO.setCreatedBy(deal.getCreatedBy());
 
         Deal deal0 = this.mapDtoToEntity(dealDTO);
-        Deal deal00 = this.dealRepository.save(deal0);
+        Deal deal00 = this.repository.save(deal0);
 
         return this.mapEntityToDto(deal00);
     }
@@ -71,7 +69,7 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     public PaginationResponse getAllDeals(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.dealRepository.findAll(pageable);
+        Page page = this.repository.findAll(pageable);
         List<Deal> deals = page.getContent();
 
         return this.pageToPagination(deals, page);
@@ -80,10 +78,10 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
 
     // Delete item
     public void deleteDeal(long id){
-        Deal deal = this.dealRepository.findById(id)
+        Deal deal = this.repository.findById(id)
                 .orElseThrow(()-> new ResourceNotFound("Deal",
                         "Deal Id", id));
-        this.dealRepository.delete(deal);
+        this.repository.delete(deal);
     }
 
 
@@ -109,11 +107,11 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
         BeanUtils.copyProperties(dto, entity);
 
         List<Item> items = this.itemRepository.findAllById(dto.getItems());
-        entity.setItems(items);
 
         if (items.isEmpty()) {
             throw new ResourceNotFound("Items", "Ids", dto.getItems());
         }
+        entity.setItems(items);
 
         if (dto.getId() > 0) {
             entity.setCreatedAt(dto.getCreatedAt());

@@ -10,12 +10,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class ItemOrderDTO {
+public class ItemOrderDTO extends BaseDTO {
     private long id;
-    private double quantity;
+    private int quantity;
     private double price;
 
     // it takes only id of item and order instead of complete objects when order would be placed
-    private long items;
+    private long item;
     private long order;
 }

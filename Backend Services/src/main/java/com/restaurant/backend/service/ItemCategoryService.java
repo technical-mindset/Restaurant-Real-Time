@@ -22,8 +22,6 @@ import java.util.List;
 @Service
 @Transactional
 public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryDTO, ItemCategoryRepository>{
-    @Autowired
-    private ItemCategoryRepository itemCategoryRepository;
 
     public ItemCategoryService(ItemCategoryRepository repository) {
         super(repository);
@@ -32,15 +30,15 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
     // Add Category
     public ItemCategoryDTO addCategory(ItemCategoryDTO itemCategoryDTO){
 
-        if (this.itemCategoryRepository.findById(itemCategoryDTO.getId()).isPresent() ) {
+        if (this.repository.findById(itemCategoryDTO.getId()).isPresent() ) {
             throw new ResourceExist("Item Category","Id", itemCategoryDTO.getId());
         }
-        else if (this.itemCategoryRepository.findByName(itemCategoryDTO.getName()).isPresent() ) {
+        else if (this.repository.findByName(itemCategoryDTO.getName()).isPresent() ) {
             throw new ResourceExist("Item Category","Name", itemCategoryDTO.getName());
         }
         ItemCategory itemCategory = this.mapDtoToEntity(itemCategoryDTO);
 
-        ItemCategory itemCategory0 = itemCategoryRepository.save(itemCategory);
+        ItemCategory itemCategory0 = repository.save(itemCategory);
         return this.mapEntityToDto(itemCategory0);
     }
 
@@ -49,7 +47,7 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
     public PaginationResponse getAllCategories(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.itemCategoryRepository.findAll(pageable);
+        Page page = this.repository.findAll(pageable);
         List<ItemCategory> itemCategories = page.getContent();
 
         return this.pageToPagination(itemCategories, page);
@@ -59,14 +57,14 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
     // Update category case
     public ItemCategoryDTO updateCategory(ItemCategoryDTO itemCategoryDTO){
 
-        ItemCategory itemCategory = this.itemCategoryRepository.findById(itemCategoryDTO.getId())
+        ItemCategory itemCategory = this.repository.findById(itemCategoryDTO.getId())
                 .orElseThrow(() -> new ResourceNotFound("Item Category", "'Item Id'", itemCategoryDTO.getId()));
 
         itemCategoryDTO.setCreatedAt(itemCategory.getCreatedAt());
         itemCategoryDTO.setCreatedBy(itemCategory.getCreatedBy());
 
         ItemCategory itemCategory0 = this.mapDtoToEntity(itemCategoryDTO);
-        ItemCategory itemCategory00 = this.itemCategoryRepository.save(itemCategory0);
+        ItemCategory itemCategory00 = this.repository.save(itemCategory0);
 
         return this.mapEntityToDto(itemCategory00);
 
@@ -75,11 +73,11 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
 
     // Delete category case
     public void deleteCategory(long id){
-        ItemCategory itemCategory = this.itemCategoryRepository
+        ItemCategory itemCategory = this.repository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Item Category",
                         "'Item Id'", id));
-        this.itemCategoryRepository.delete(itemCategory);
+        this.repository.delete(itemCategory);
     }
 
     @Override

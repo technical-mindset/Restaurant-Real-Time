@@ -1,5 +1,6 @@
 package com.restaurant.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,13 +22,13 @@ public class Order {
     private LocalDateTime createdAt;
     @Column(name = "bill")
     private double bill;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ItemOrder> itemOrders = new ArrayList<>();
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<DealOrder> dealOrders = new ArrayList<>();
 //    @OneToOne(mappedBy = "order")
 //    private Invoice invoice;
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "table_id")
     private TableSitting tableSitting;
 }

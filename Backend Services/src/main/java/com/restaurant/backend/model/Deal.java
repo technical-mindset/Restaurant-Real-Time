@@ -14,6 +14,7 @@ public class Deal extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
+    @Column(name = "deal_code", unique = true)
     private int deal_code;
     @Column(name = "description")
     private String description;

@@ -4,6 +4,7 @@ import com.restaurant.backend.helper.ApiResponse;
 import com.restaurant.backend.payloads.ItemDTO;
 import com.restaurant.backend.service.ItemService;
 import com.restaurant.backend.utils.Constants;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class ItemController {
 
     // Add Item
     @PostMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> addItem(@RequestBody ItemDTO itemDTO){
+    public ResponseEntity<ApiResponse> addItem(@Valid @RequestBody ItemDTO itemDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
                 this.itemService.addItem(itemDTO),
                 true), HttpStatus.OK);
@@ -39,7 +40,7 @@ public class ItemController {
 
     // Update Item
     @PutMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> updateItem(@RequestBody ItemDTO itemDTO){
+    public ResponseEntity<ApiResponse> updateItem(@Valid @RequestBody ItemDTO itemDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
                 this.itemService.updateItem(itemDTO),
                 true), HttpStatus.OK);

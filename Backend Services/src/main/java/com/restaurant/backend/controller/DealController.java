@@ -4,6 +4,7 @@ import com.restaurant.backend.helper.ApiResponse;
 import com.restaurant.backend.payloads.DealDTO;
 import com.restaurant.backend.service.DealService;
 import com.restaurant.backend.utils.Constants;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class DealController {
 
     // Add case
     @PostMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> addDeal(@RequestBody DealDTO dealDTO){
+    public ResponseEntity<ApiResponse> addDeal(@Valid @RequestBody DealDTO dealDTO){
 
         return new ResponseEntity<>(new ApiResponse(
                 Constants.MESSAGE_ADDED,
@@ -29,7 +30,7 @@ public class DealController {
 
     // Update case
     @PutMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> updateDeal(@RequestBody DealDTO dealDTO){
+    public ResponseEntity<ApiResponse> updateDeal(@Valid @RequestBody DealDTO dealDTO){
 
         return new ResponseEntity<>(new ApiResponse(
                 Constants.MESSAGE_UPDATED,

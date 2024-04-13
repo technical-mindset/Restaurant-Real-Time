@@ -6,6 +6,7 @@ import com.restaurant.backend.payloads.CompileOrderDTO;
 import com.restaurant.backend.payloads.OrderDTO;
 import com.restaurant.backend.service.OrderService;
 import com.restaurant.backend.utils.Constants;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class OrderController {
 
     // Add case
     @PostMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> addOrder(@RequestBody CompileOrderDTO compileOrderDTO){
+    public ResponseEntity<ApiResponse> addOrder(@Valid @RequestBody CompileOrderDTO compileOrderDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
                 this.os.addOrder(compileOrderDTO), true),
                 HttpStatus.OK);
@@ -40,7 +41,7 @@ public class OrderController {
 
     // Update case
     @PutMapping(Constants.ADD_UPDATE_URI + "/{id}")
-    public ResponseEntity<ApiResponse> updateOrder(@RequestBody CompileOrderDTO compileOrderDTO, @PathVariable("id") long id){
+    public ResponseEntity<ApiResponse> updateOrder(@Valid @RequestBody CompileOrderDTO compileOrderDTO, @PathVariable("id") long id){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
                 this.os.updateOrder(compileOrderDTO), true),
                 HttpStatus.OK);

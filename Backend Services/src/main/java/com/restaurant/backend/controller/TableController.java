@@ -8,6 +8,7 @@ import com.restaurant.backend.payloads.TableSittingAdminDTO;
 import com.restaurant.backend.payloads.TableSittingDTO;
 import com.restaurant.backend.service.TableSittingService;
 import com.restaurant.backend.utils.Constants;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class TableController {
     @PutMapping
     public ResponseEntity<ApiResponse> updateTag(
             @RequestParam(value = "isReserved", defaultValue = "false", required = false) boolean isReserved,
-            @RequestBody TableSittingDTO tableSittingDTO){
+           @Valid @RequestBody TableSittingDTO tableSittingDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
                 this.service.isReserved(tableSittingDTO),
                 true), HttpStatus.OK);
@@ -43,7 +44,7 @@ public class TableController {
 
     // Add Table
     @PostMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> addTable(@RequestBody TableSittingAdminDTO tableSittingAdminDTO){
+    public ResponseEntity<ApiResponse> addTable(@Valid @RequestBody TableSittingAdminDTO tableSittingAdminDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
                 this.service.addTable(tableSittingAdminDTO),
                 true), HttpStatus.OK);
@@ -51,7 +52,7 @@ public class TableController {
 
     // Update Table
     @PutMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> updateTable(@RequestBody TableSittingAdminDTO tableSittingAdminDTO){
+    public ResponseEntity<ApiResponse> updateTable(@Valid @RequestBody TableSittingAdminDTO tableSittingAdminDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
                 this.service.updateTable(tableSittingAdminDTO),
                 true), HttpStatus.OK);

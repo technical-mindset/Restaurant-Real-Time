@@ -104,14 +104,13 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
         if (dto.getId() > 0) {
             entity.setCreatedAt(dto.getCreatedAt());
             entity.setCreatedBy(dto.getCreatedBy());
-            entity.setUpdatedBy("Zaidi");
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
-            entity.setUpdatedBy("Ali Akbar");
+            entity.setCreatedBy(this.getUserName());
 
         }
+        entity.setUpdatedBy(this.getUserName());
         entity.setUpdatedAt(LocalDateTime.now());
 
         return entity;

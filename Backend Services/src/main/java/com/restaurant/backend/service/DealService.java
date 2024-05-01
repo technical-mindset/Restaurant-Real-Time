@@ -116,16 +116,14 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
         if (dto.getId() > 0) {
             entity.setCreatedAt(dto.getCreatedAt());
             entity.setCreatedBy(dto.getCreatedBy());
-            entity.setUpdatedBy("Zaidi");
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
-            entity.setUpdatedBy("Ali Akbar");
-
+            entity.setCreatedBy(this.getUserName());
         }
-        entity.setUpdatedAt(LocalDateTime.now());
 
+        entity.setUpdatedBy(this.getUserName());
+        entity.setUpdatedAt(LocalDateTime.now());
         return entity;
     }
 }

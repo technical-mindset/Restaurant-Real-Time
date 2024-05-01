@@ -17,6 +17,6 @@ public class Roles extends BaseEntity{
     private String name;
     @Column(name = "role_type", unique = true)
     private String role_type;
-    @ManyToMany(mappedBy = "role")
+    @ManyToMany(mappedBy = "role", cascade = CascadeType.REMOVE)
     private List<User> user;
 }

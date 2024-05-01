@@ -66,11 +66,13 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         Order order = this.repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Order", "Id", id));
 
+        // Get all item orders
         List<ItemOrderDTO> itemOrderDTOS = order.getItemOrders()
                 .stream()
                 .map(e->this.itemOrderService.mapEntityToDto(e))
                 .collect(Collectors.toList());
 
+        // Get all deal orders
         List<DealOrderDTO> dealOrderDTOS = order.getDealOrders()
                 .stream()
                 .map(e->this.dealOrderService.mapEntityToDto(e))
@@ -168,7 +170,7 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
+            entity.setCreatedBy(this.getUserName());
         }
         return entity;
     }

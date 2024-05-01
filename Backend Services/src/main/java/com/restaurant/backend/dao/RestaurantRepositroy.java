@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface RestuarantRepositroy extends JpaRepository<Restaurant, Long> {
+public interface RestaurantRepositroy extends JpaRepository<Restaurant, Long> {
 }

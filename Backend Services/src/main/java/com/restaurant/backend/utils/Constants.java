@@ -23,6 +23,8 @@ public class Constants {
     public static final String ITEM_CATEGORY_URI = "/itemcategory";
     public static final String ITEM_URI = "/item";
     public static final String Deal_URI = "/deal";
+    public static final String Order_URI = "/order";
+    public static final String Table_URI = "/table";
 
     // ----------  ---------- Constants For DTO -------- -----------
     public static final String NO_DATA_FOUND = "No Data Found :(";

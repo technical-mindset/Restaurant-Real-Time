@@ -1,6 +1,6 @@
 package com.restaurant.backend.service;
 
-import com.restaurant.backend.dao.RestuarantRepositroy;
+import com.restaurant.backend.dao.RestaurantRepositroy;
 import com.restaurant.backend.dao.TableSittingRepository;
 import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 public class TableSittingService extends BaseService<TableSitting, TableSittingAdminDTO, TableSittingRepository> {
     @Autowired
-    private RestuarantRepositroy restuarantRepositroy;
+    private RestaurantRepositroy restaurantRepositroy;
 
 
     public TableSittingService(TableSittingRepository repository) {
@@ -121,21 +121,21 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
         TableSitting entity = new TableSitting();
         BeanUtils.copyProperties(dto, entity);
 
-        Restaurant restaurant = this.restuarantRepositroy.findById(dto.getRestaurantId())
+        Restaurant restaurant = this.restaurantRepositroy.findById(dto.getRestaurantId())
                 .orElseThrow(()->new ResourceNotFound("Restaurant", "Id", dto.getRestaurantId()));
         entity.setRestaurant(restaurant);
 
         if (dto.getId() > 0) {
             entity.setCreatedAt(dto.getCreatedAt());
             entity.setCreatedBy(dto.getCreatedBy());
-            entity.setUpdatedBy("Zaidi");
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
-            entity.setUpdatedBy("Ali Akbar");
+            entity.setCreatedBy(this.getUserName());
+            entity.setUpdatedBy(this.getUserName());
 
         }
+        entity.setUpdatedBy(this.getUserName());
         entity.setUpdatedAt(LocalDateTime.now());
         return entity;
     }

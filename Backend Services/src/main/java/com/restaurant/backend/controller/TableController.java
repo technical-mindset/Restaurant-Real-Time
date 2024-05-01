@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/table")
+@RequestMapping(Constants.Table_URI)
 public class TableController {
     @Autowired
     private TableSittingService service;

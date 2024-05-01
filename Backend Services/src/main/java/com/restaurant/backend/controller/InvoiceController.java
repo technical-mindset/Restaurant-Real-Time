@@ -4,6 +4,7 @@ import com.restaurant.backend.helper.ApiResponse;
 import com.restaurant.backend.payloads.InvoiceRequestDTO;
 import com.restaurant.backend.service.InvoiceService;
 import com.restaurant.backend.utils.Constants;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class InvoiceController {
     InvoiceService invoiceService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getInvoice(@RequestBody InvoiceRequestDTO invoiceRequestDTO){
+    public ResponseEntity<ApiResponse> getInvoice(@Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
                 this.invoiceService.generateInvoice(invoiceRequestDTO), true), HttpStatus.OK);
     }

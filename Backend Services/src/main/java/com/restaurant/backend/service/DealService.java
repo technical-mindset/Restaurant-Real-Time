@@ -69,10 +69,7 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     public PaginationResponse getAllDeals(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.repository.findAll(pageable);
-        List<Deal> deals = page.getContent();
-
-        return this.pageToPagination(deals, page);
+        return this.pageToPagination(pageable);
     }
 
 

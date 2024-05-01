@@ -47,10 +47,7 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
     public PaginationResponse getAllCategories(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.repository.findAll(pageable);
-        List<ItemCategory> itemCategories = page.getContent();
-
-        return this.pageToPagination(itemCategories, page);
+        return this.pageToPagination(pageable);
     }
 
 

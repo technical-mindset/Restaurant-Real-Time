@@ -3,12 +3,17 @@ package com.restaurant.backend.service;
 import com.restaurant.backend.dao.RestaurantRepositroy;
 import com.restaurant.backend.dao.RolesRepository;
 import com.restaurant.backend.dao.UserRepository;
+import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.Restaurant;
 import com.restaurant.backend.model.Roles;
 import com.restaurant.backend.model.User;
 import com.restaurant.backend.payloads.UserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,9 +32,14 @@ public class UserService extends BaseService<User, UserDTO, UserRepository> {
     public UserService(UserRepository repository) {
         super(repository);
     }
-    
 
+    // get All users
+    public PaginationResponse getAllUsers(int pageNumber, int pageSize, String sortBy){
 
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+        return this.pageToPagination(pageable);
+
+    }
 
 
 

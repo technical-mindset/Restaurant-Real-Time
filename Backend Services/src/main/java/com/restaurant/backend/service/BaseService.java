@@ -7,6 +7,7 @@ import com.restaurant.backend.model.User;
 import com.restaurant.backend.payloads.BaseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +26,11 @@ public abstract class BaseService<E, D extends BaseDTO, R extends JpaRepository<
     }
     public abstract D mapEntityToDto(E entity);
     public abstract E mapDtoToEntity(D dto);
-    public PaginationResponse pageToPagination(List<E> entities, Page page){
+    public PaginationResponse pageToPagination(Pageable pageable){
+
+        Page page = this.repository.findAll(pageable);
+        List<E> entities = page.getContent();
+
         PaginationResponse paginationResponse = new PaginationResponse();
 
         paginationResponse.setData(entities

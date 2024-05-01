@@ -35,12 +35,8 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
 
     // Get All Tables for Normal and Admin case
     public PaginationResponse getAllTables(int pageNumber, int pageSize, String sortBy){
-
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.repository.findAll(pageable);
-        List<TableSitting> tables = page.getContent();
-
-       return this.pageToPagination(tables, page);
+       return this.pageToPagination(pageable);
     }
 
 

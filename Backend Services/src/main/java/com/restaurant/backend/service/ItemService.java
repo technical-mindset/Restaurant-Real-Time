@@ -65,10 +65,7 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     public PaginationResponse getAllItems(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.repository.findAll(pageable);
-        List<Item> items = page.getContent();
-
-        return this.pageToPagination(items, page);
+        return this.pageToPagination(pageable);
     }
 
 

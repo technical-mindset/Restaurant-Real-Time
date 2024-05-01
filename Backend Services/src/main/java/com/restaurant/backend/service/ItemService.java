@@ -65,10 +65,7 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     public PaginationResponse getAllItems(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.repository.findAll(pageable);
-        List<Item> items = page.getContent();
-
-        return this.pageToPagination(items, page);
+        return this.pageToPagination(pageable);
     }
 
 
@@ -104,14 +101,13 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
         if (dto.getId() > 0) {
             entity.setCreatedAt(dto.getCreatedAt());
             entity.setCreatedBy(dto.getCreatedBy());
-            entity.setUpdatedBy("Zaidi");
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
-            entity.setUpdatedBy("Ali Akbar");
+            entity.setCreatedBy(this.getUserName());
 
         }
+        entity.setUpdatedBy(this.getUserName());
         entity.setUpdatedAt(LocalDateTime.now());
 
         return entity;

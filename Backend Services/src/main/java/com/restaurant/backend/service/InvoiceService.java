@@ -2,16 +2,20 @@ package com.restaurant.backend.service;
 
 import com.restaurant.backend.dao.InvoiceRepository;
 import com.restaurant.backend.dao.OrderRepository;
+import com.restaurant.backend.dao.UserRepository;
 import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.model.Invoice;
 import com.restaurant.backend.model.Order;
+import com.restaurant.backend.model.User;
 import com.restaurant.backend.payloads.InvoiceDTO;
 import com.restaurant.backend.payloads.InvoiceRequestDTO;
 import com.restaurant.backend.payloads.OrderInvoiceDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,10 +31,16 @@ public class InvoiceService {
     @Autowired
     OrderRepository orderRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     // Generate Invoice
     public InvoiceDTO generateInvoice(InvoiceRequestDTO dto){
         if (this.repository.existsById(dto.getId())) {
             throw new ResourceExist("Invoice", "Id", dto.getId());
+        }
+        if (this.orderRepository.existsById(dto.getOrder_id())) {
+            throw new ResourceExist("Order", "Id", dto.getOrder_id());
         }
         Invoice inv = this.mapDtoToEntity(dto);
 
@@ -78,10 +88,19 @@ public class InvoiceService {
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
+            entity.setCreatedBy(this.getUserName());
         }
 
         entity.setOrder(order);
         return entity;
     }
+
+    public String getUserName(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = this.userRepository.findByUsername(authentication.getName()).get();
+        return user.getUsername();
+    }
+
+
+
 }

@@ -69,10 +69,7 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     public PaginationResponse getAllDeals(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-        Page page = this.repository.findAll(pageable);
-        List<Deal> deals = page.getContent();
-
-        return this.pageToPagination(deals, page);
+        return this.pageToPagination(pageable);
     }
 
 
@@ -116,16 +113,14 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
         if (dto.getId() > 0) {
             entity.setCreatedAt(dto.getCreatedAt());
             entity.setCreatedBy(dto.getCreatedBy());
-            entity.setUpdatedBy("Zaidi");
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
-            entity.setUpdatedBy("Ali Akbar");
-
+            entity.setCreatedBy(this.getUserName());
         }
-        entity.setUpdatedAt(LocalDateTime.now());
 
+        entity.setUpdatedBy(this.getUserName());
+        entity.setUpdatedAt(LocalDateTime.now());
         return entity;
     }
 }

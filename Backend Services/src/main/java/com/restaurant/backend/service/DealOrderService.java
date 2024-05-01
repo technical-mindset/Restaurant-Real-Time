@@ -98,8 +98,11 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
+            entity.setCreatedBy(this.getUserName());
         }
+
+        entity.setUpdatedBy(this.getUserName());
+        entity.setUpdatedAt(LocalDateTime.now());
         return entity;
     }
 }

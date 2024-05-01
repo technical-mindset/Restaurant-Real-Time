@@ -97,7 +97,7 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
         }
         else {
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy("Ali Akbar");
+            entity.setCreatedBy(this.getUserName());
         }
         return entity;
     }

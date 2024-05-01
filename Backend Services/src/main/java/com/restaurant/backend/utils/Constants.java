@@ -23,8 +23,16 @@ public class Constants {
     public static final String ITEM_CATEGORY_URI = "/itemcategory";
     public static final String ITEM_URI = "/item";
     public static final String Deal_URI = "/deal";
+    public static final String Order_URI = "/order";
+    public static final String Table_URI = "/table";
 
-    // ----------  ---------- No Data Found -------- -----------
+    // ----------  ---------- Constants For DTO -------- -----------
     public static final String NO_DATA_FOUND = "No Data Found :(";
+    public static final String EXIST_MESSAGE = "This Value is Already Exist";
+    public static final String EMPTY_MESSAGE = "must not be Empty";
+    public static final String MIN_VALUE = "must be greater than or equal to 3";
+    public static final String MAX_VALUE = "must be short !!";
+
+
 
 }

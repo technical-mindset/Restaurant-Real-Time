@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,13 +21,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-public class JwtAunthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     Logger logger = LoggerFactory.getLogger(OncePerRequestFilter.class);
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+
+    JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService){
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -45,17 +47,13 @@ public class JwtAunthenticationFilter extends OncePerRequestFilter {
 
                 username = this.jwtService.getUsernameFromToken(token);
 
-            } catch (IllegalArgumentException e) {
-                logger.info("Illegal Argument while fetching the username !!");
-                e.printStackTrace();
-            } catch (ExpiredJwtException e) {
-                logger.info("Given jwt token is expired !!");
-                e.printStackTrace();
-            } catch (MalformedJwtException e) {
-                logger.info("Some changed has done in token !! Invalid Token");
-                e.printStackTrace();
+            } catch (IllegalArgumentException | ExpiredJwtException | MalformedJwtException e) {
+
+                logger.error("Error occurred while processing JWT token", e);
+
             } catch (Exception e) {
-                e.printStackTrace();
+
+                logger.error("Unexpected error occurred", e);
 
             }
         }
@@ -80,6 +78,7 @@ public class JwtAunthenticationFilter extends OncePerRequestFilter {
                 logger.info("Validation fails !!");
             }
         }
+
         filterChain.doFilter(request, response);
 
 

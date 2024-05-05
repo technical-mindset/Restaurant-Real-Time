@@ -39,14 +39,14 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
     // Get All Order of 24-hours
     public List<OrderDTO> getOrderOf_24hrs() {
         LocalDateTime localDateTime = LocalDateTime.now();
-        List<Order> orders = this.repository.findAllByCreatedAtBetween(localDateTime.minusDays(1), localDateTime);
+        List<Order> orders = this.repository.findAllByCreatedAtBetween(localDateTime.minusDays(100), localDateTime);
 
         List<Object> list = new ArrayList<>();
         list.add(orders);
 
         // converting LocalDateTime into Date
-        list.add("Start-Date: "+ Date.from(localDateTime.minusDays(2).atZone(ZoneId.systemDefault()).toInstant()));
-        list.add("End-Date: "+ Date.from(localDateTime.minusDays(1).atZone(ZoneId.systemDefault()).toInstant()));
+        list.add("Start-Date: "+ Date.from(localDateTime.minusDays(100).atZone(ZoneId.systemDefault()).toInstant()));
+        list.add("End-Date: "+ Date.from(localDateTime.minusDays(100).atZone(ZoneId.systemDefault()).toInstant()));
 
         ApiResponse response = new ApiResponse(
                 Constants.MESSAGE_FETCHED,

@@ -22,7 +22,7 @@ public class MyUserDetails implements UserDetails {
         List<Roles> roles = this.user.getRole();
         return roles
                 .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .map(role -> new SimpleGrantedAuthority(role.getRole_type()))
                 .collect(Collectors.toList());
     }
 

@@ -33,7 +33,7 @@ public class TableController {
     }
 
     // update isReserved flag
-    @PutMapping
+    @PutMapping("/flag/{id}")
     public ResponseEntity<ApiResponse> updateTag(
             @RequestParam(value = "isReserved", defaultValue = "false", required = false) boolean isReserved,
            @Valid @RequestBody TableSittingDTO tableSittingDTO){

@@ -25,6 +25,7 @@ public class Constants {
     public static final String Deal_URI = "/deal";
     public static final String Order_URI = "/order";
     public static final String Table_URI = "/table";
+    public static final String User_URI = "/user";
 
     // ----------  ---------- Constants For DTO -------- -----------
     public static final String NO_DATA_FOUND = "No Data Found :(";

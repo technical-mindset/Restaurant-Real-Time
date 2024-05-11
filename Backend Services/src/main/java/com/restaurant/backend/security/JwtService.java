@@ -1,8 +1,6 @@
 package com.restaurant.backend.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +41,7 @@ public class JwtService {
     }
 
     //for retrieveing any information from token we will need the secret key
-    private Claims getAllClaimsFromToken(String token) {
+    private Claims getAllClaimsFromToken(String token) throws JwtException {
         return Jwts.parser()
                 .setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }

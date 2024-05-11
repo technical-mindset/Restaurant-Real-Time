@@ -4,12 +4,17 @@ import com.restaurant.backend.dao.OrderRepository;
 import com.restaurant.backend.dao.TableSittingRepository;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.ApiResponse;
+import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.*;
 import com.restaurant.backend.payloads.*;
 import com.restaurant.backend.utils.Constants;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,23 +42,36 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
     // ---------------------------------------------------------------------------------------
     /** This method is used for only generating the daily Report and Email */
     // Get All Order of 24-hours
-    public List<OrderDTO> getOrderOf_24hrs() {
+    public PaginationResponse getOrdersAccordingToDate(int date, int pageNumber, int pageSize, String sortBy) {
         LocalDateTime localDateTime = LocalDateTime.now();
-        List<Order> orders = this.repository.findAllByCreatedAtBetween(localDateTime.minusDays(100), localDateTime);
 
-        List<Object> list = new ArrayList<>();
-        list.add(orders);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+        Page page = this.repository.findAllByCreatedAtBetween(localDateTime.minusDays(date), localDateTime, pageable);
+        List<Order> entities = page.getContent();
+
+        PaginationResponse paginationResponse = new PaginationResponse();
+
+        paginationResponse.setData(entities
+                .stream()
+                .map(e -> this.mapEntityToDto(e))
+                .collect(Collectors.toList()));
+
+
+        paginationResponse.setPageNumber(page.getNumber());
+        paginationResponse.setPageSize(page.getSize());
+        paginationResponse.setTotalElements(page.getTotalElements());
+        paginationResponse.setTotalPages(page.getTotalPages());
+        paginationResponse.setLastPage(page.isLast());
+
+//        List<Order> orders = this.repository.findAllByCreatedAtBetween(localDateTime.minusDays(date), localDateTime);
+//        List<Object> list = new ArrayList<>();
+//        list.add(orders);
 
         // converting LocalDateTime into Date
-        list.add("Start-Date: "+ Date.from(localDateTime.minusDays(100).atZone(ZoneId.systemDefault()).toInstant()));
-        list.add("End-Date: "+ Date.from(localDateTime.minusDays(100).atZone(ZoneId.systemDefault()).toInstant()));
+//        list.add("Start-Date: "+ Date.from(localDateTime.minusDays(100).atZone(ZoneId.systemDefault()).toInstant()));
+//        list.add("End-Date: "+ Date.from(localDateTime.minusDays(100).atZone(ZoneId.systemDefault()).toInstant()));
 
-        ApiResponse response = new ApiResponse(
-                Constants.MESSAGE_FETCHED,
-                list,
-                true
-        );
-        return orders.stream().map(e->this.mapEntityToDto(e)).collect(Collectors.toList());
+        return paginationResponse;
     }
     // ---------------------------------------------------------------------------------------
 
@@ -112,6 +130,9 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
 
     // Update case
     public OrderDTO updateOrder(CompileOrderDTO dto){
+        System.out.println("========= In Order Update");
+        System.out.println("========= In Order Update");
+        System.out.println("========= In Order Update");
 
         Order order = this.repository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFound("Order", "'Id'", dto.getId()));
@@ -123,25 +144,40 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         Order order0 = this.mapDtoToEntity(orderDTO);
         Order entity = this.repository.save(order0);
 
-        List<ItemOrderDTO> itemOrder = dto.getItemOrder()
+        if (dto.getItemOrder() != null)
+//        List<ItemOrderDTO> itemOrder =
+                dto.getItemOrder()
                 .stream()
                 .map(e->this.itemOrderService.updateItemOrder(e, entity.getId()))
                 .collect(Collectors.toList());
 
-        List<DealOrderDTO> dealOrder = dto.getDealOrder()
-                .stream()
-                .map(e->this.dealOrderService.updateDealOrder(e, entity.getId()))
-                .collect(Collectors.toList());
+        if (dto.getDealOrder() != null)
+//            List<DealOrderDTO> dealOrder =
+                    dto.getDealOrder()
+                    .stream()
+                    .map(e->this.dealOrderService.updateDealOrder(e, entity.getId()))
+                    .collect(Collectors.toList());
+
 
         return this.mapEntityToDto(entity);
     }
 
     // Delete case
-    public void deleteOrder(long id) {
+    public void deleteCompleteOrder(long id) {
         Order order = this.repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Order",
                         "Id", id));
         this.repository.delete(order);
+    }
+
+    // For deleting single orders related to item or deal
+    public void deleteOrder(long orderId, long oid, long did){
+        if (oid > 0) {
+            this.itemOrderService.deleteItemOrder(orderId, oid);
+        }
+        if (did > 0) {
+            this.dealOrderService.deleteDealOrder(orderId, did);
+        }
     }
 
     // -------------- Over Ride Methods -------------------
@@ -172,6 +208,7 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
         }
+
         return entity;
     }
 }

@@ -17,8 +17,12 @@ public class InvoiceController {
     InvoiceService invoiceService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getInvoice(@Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO){
+    public ResponseEntity<ApiResponse> getInvoice(@Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO, @PathVariable("id") long order_id){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
-                this.invoiceService.generateInvoice(invoiceRequestDTO), true), HttpStatus.OK);
+                this.invoiceService.generateInvoice(invoiceRequestDTO, order_id), true), HttpStatus.OK);
+    }
+    public ResponseEntity<ApiResponse> deleteInvoice(@PathVariable("id") long id){
+        this.invoiceService.delete(id);
+        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, "", true), HttpStatus.OK);
     }
 }

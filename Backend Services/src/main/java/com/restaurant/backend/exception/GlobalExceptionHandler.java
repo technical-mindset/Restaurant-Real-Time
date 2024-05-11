@@ -1,6 +1,8 @@
 package com.restaurant.backend.exception;
 
 import com.restaurant.backend.helper.ApiResponse;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +18,11 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
+        return new ResponseEntity<>(new ApiResponse("Un-Authorized Attempt !!", "", false), HttpStatus.UNAUTHORIZED);
+    }
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<ApiResponse> resourceNotFoundExceptionHandler(ResourceNotFound resourceNotFound){
         return new ResponseEntity<ApiResponse>(new ApiResponse(resourceNotFound.getMessage(),"", false), HttpStatus.NOT_FOUND);
@@ -41,6 +48,15 @@ public class GlobalExceptionHandler {
         });
         return new ResponseEntity<Map<String, String>>(listOfErrors, HttpStatus.BAD_REQUEST);
     }
+
+//    @ExceptionHandler(ExpiredJwtException.class)
+//    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
+//        // You can format the message as you like, or just use ex.getMessage()
+//        String errorMessage = "JWT expired at " + ex.getClaims().getExpiration() + ". " +
+//                "Current date: " + new Date() + ". \n" +
+//                "Cause: " + ex.getCause() + ".";
+//        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
+//    }
 
 
     @ExceptionHandler(BadCredentialsException.class)

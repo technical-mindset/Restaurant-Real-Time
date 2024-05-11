@@ -39,8 +39,8 @@ public class InvoiceService {
         if (this.repository.existsById(dto.getId())) {
             throw new ResourceExist("Invoice", "Id", dto.getId());
         }
-        else if (this.repository.existsByOrderId(order_id)) {
-            throw new ResourceExist("Kindly delete the Invoice", "Order-Id", order_id);
+        else if (this.repository.existsByOrderId(dto.getOrder_id()) || this.repository.existsByOrderId(order_id)) {
+            throw new ResourceExist("Kindly delete the Invoice", "Order-Id", dto.getOrder_id());
         }
 
         Invoice inv = this.mapDtoToEntity(dto);

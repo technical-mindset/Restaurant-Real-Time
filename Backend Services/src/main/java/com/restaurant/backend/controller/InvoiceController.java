@@ -21,6 +21,8 @@ public class InvoiceController {
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
                 this.invoiceService.generateInvoice(invoiceRequestDTO, order_id), true), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteInvoice(@PathVariable("id") long id){
         this.invoiceService.delete(id);
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, "", true), HttpStatus.OK);

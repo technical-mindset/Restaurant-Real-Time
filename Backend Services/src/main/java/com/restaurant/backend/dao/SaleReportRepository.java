@@ -17,4 +17,12 @@ public interface SaleReportRepository extends JpaRepository<SaleReport, Long> {
     List<SaleReport> findDailySaleBySaleDates(String saleDate);
 
 
+    @Query(value = "SELECT * FROM daily_deal_sales WHERE sale_date LIKE %?1%", nativeQuery = true)
+    List<SaleReport> findDailyDealSaleBySaleDates(String saleDate);
+
+    @Query(value = "SELECT * FROM monthly_deal_sales WHERE sale_date LIKE %?1%", nativeQuery = true)
+    List<SaleReport> findMonthlyDealSaleBySaleDates(String saleDate);
+
+
+
 }

@@ -55,8 +55,15 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
         Deal deal = this.repository.findById(dealDTO.getId())
                 .orElseThrow(() -> new ResourceNotFound("Deal", "'deal Id'", dealDTO.getId()));
 
+        /** if the user would not send these values while updating the deal so,*/
         dealDTO.setCreatedAt(deal.getCreatedAt());
         dealDTO.setCreatedBy(deal.getCreatedBy());
+        if (dealDTO.getDeal_code() <= 0) {
+            dealDTO.setDeal_code(deal.getDeal_code());
+        }
+        if (dealDTO.getDescription() == null) {
+            dealDTO.setDescription(deal.getDescription());
+        }
 
         Deal deal0 = this.mapDtoToEntity(dealDTO);
         Deal deal00 = this.repository.save(deal0);
@@ -103,11 +110,19 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
         Deal entity = new Deal();
         BeanUtils.copyProperties(dto, entity);
 
+
         List<Item> items = this.itemRepository.findAllById(dto.getItems());
 
         if (items.isEmpty()) {
             throw new ResourceNotFound("Items", "Ids", dto.getItems());
         }
+
+        double totalSum = 0; // for adding all items price
+        for (Item i: items){
+            totalSum += i.getPrice();
+        }
+
+        entity.setActual_price(totalSum);
         entity.setItems(items);
 
         if (dto.getId() > 0) {

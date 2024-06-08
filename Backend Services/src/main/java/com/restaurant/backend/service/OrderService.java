@@ -108,17 +108,23 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         Order order = this.mapDtoToEntity(orderDTO);
         Order entity = this.repository.save(order);
 
+        List<ItemOrderDTO> itemOrderDTOS = null;
+        List<DealOrderDTO> dealOrderDTOS = null;
 
-        List<ItemOrderDTO> itemOrderDTOS = dto.getItemOrder()
-                .stream()
-                .map(e->this.itemOrderService.addItemOrder(e, entity.getId()))
-                .collect(Collectors.toList());
+        if (dto.getItemOrder() != null) {
+            itemOrderDTOS = dto.getItemOrder()
+                    .stream()
+                    .map(e->this.itemOrderService.addItemOrder(e, entity.getId()))
+                    .collect(Collectors.toList());
 
-        List<DealOrderDTO> dealOrderDTOS = dto.getDealOrder()
-                .stream()
-                .map(e->this.dealOrderService.addDealOrder(e, entity.getId()))
-                .collect(Collectors.toList());
+        }
 
+        if (dto.getDealOrder() != null) {
+            dealOrderDTOS = dto.getDealOrder()
+                    .stream()
+                    .map(e->this.dealOrderService.addDealOrder(e, entity.getId()))
+                    .collect(Collectors.toList());
+        }
 
         OrderDTO orderDTO0 = this.mapEntityToDto(entity);
         return  new CompileOrderDTO(orderDTO0.getId(), orderDTO0.getBill(), orderDTO0.getTableSitting(),

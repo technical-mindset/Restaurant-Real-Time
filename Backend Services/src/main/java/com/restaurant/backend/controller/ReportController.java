@@ -18,16 +18,28 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    @GetMapping("/daily")
-    public ResponseEntity<ApiResponse> daily(@RequestBody ReportDateDTO date){
+    @GetMapping("/daily/item")
+    public ResponseEntity<ApiResponse> dailyItems(@RequestBody ReportDateDTO date){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
                 this.reportService.dailyReport(date.getDate()), true), HttpStatus.OK);
     }
 
-    @GetMapping("/monthly")
-    public ResponseEntity<ApiResponse> monthly(@RequestBody ReportDateDTO date){
-        System.out.println(date+"---------------------------------------");
+    @GetMapping("/monthly/item")
+    public ResponseEntity<ApiResponse> monthlyItems(@RequestBody ReportDateDTO date){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
                 this.reportService.monthlyReport(date.getDate()), true), HttpStatus.OK);
+    }
+
+    /** Deal Report Controllers */
+    @GetMapping("/daily/deal")
+    public ResponseEntity<ApiResponse> dailyDeals(@RequestBody ReportDateDTO date){
+        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
+                this.reportService.dailyDealReport(date.getDate()), true), HttpStatus.OK);
+    }
+
+    @GetMapping("/monthly/deal")
+    public ResponseEntity<ApiResponse> monthlyDeals(@RequestBody ReportDateDTO date){
+        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
+                this.reportService.monthlyDealReport(date.getDate()), true), HttpStatus.OK);
     }
 }

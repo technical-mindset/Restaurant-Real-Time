@@ -10,12 +10,11 @@ import lombok.Getter;
 /** This is a SQL-View for generating the Daily, Weekly, Monthly and Yearly report */
 @Getter
 @Entity
-//@Table(name = "monthly_sales")
 public class SaleReport {
 
-    @Id
-    @Column(name = "item_id")
-    private long itemId;
+    @Id // using 'id' as column name because deal_order and item_order both table view's item_id and deal_id ALIAS id
+    @Column(name = "id")
+    private long id;
 
     @Column(name = "name")
     private String name;

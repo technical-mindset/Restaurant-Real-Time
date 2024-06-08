@@ -106,6 +106,7 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
                         .orElseThrow(() -> new ResourceNotFound("Order", "Id", dto.getOrder()));
 
         entity.setItem(item);
+        entity.setPrice(item.getPrice() * dto.getQuantity()); // setting the total price of each item-order
         entity.setOrder(order);
 
         if (dto.getId() > 0) {

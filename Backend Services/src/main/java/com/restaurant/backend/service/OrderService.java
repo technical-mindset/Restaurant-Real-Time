@@ -1,13 +1,13 @@
 package com.restaurant.backend.service;
 
+import com.restaurant.backend.dao.SaleReportRepository;
 import com.restaurant.backend.dao.OrderRepository;
 import com.restaurant.backend.dao.TableSittingRepository;
+import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
-import com.restaurant.backend.helper.ApiResponse;
 import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.*;
 import com.restaurant.backend.payloads.*;
-import com.restaurant.backend.utils.Constants;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +31,8 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
     private ItemOrderService itemOrderService;
     @Autowired
     private DealOrderService dealOrderService;
+    @Autowired
+    private SaleReportRepository spr;
 
     public OrderService(OrderRepository repository) {
         super(repository);
@@ -78,8 +77,6 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
 
     // Get case
     public CompileOrderDTO getOrderById(long id){
-
-
 
         Order order = this.repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Order", "Id", id));
@@ -198,6 +195,10 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
 
         TableSitting ts = this.tableSittingRepository.findById(dto.getTableSitting())
                 .orElseThrow(() -> new ResourceNotFound("Table", "Id", dto.getTableSitting()));
+        // if the table already reserved
+        if (ts.isReserved()) {
+            throw new ResourceExist("Table-Reserved", "Id", dto.getTableSitting());
+        }
         entity.setTableSitting(ts);
 
         if (dto.getId() > 0) {

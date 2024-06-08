@@ -24,7 +24,8 @@ public class InvoiceController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteInvoice(@PathVariable("id") long id){
-        this.invoiceService.delete(id);
+        this.invoiceService.deleteByOrderId(id);
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, "", true), HttpStatus.OK);
     }
+
 }

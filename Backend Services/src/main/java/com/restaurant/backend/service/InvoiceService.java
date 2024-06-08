@@ -40,7 +40,7 @@ public class InvoiceService {
             throw new ResourceExist("Invoice", "Id", dto.getId());
         }
         else if (this.repository.existsByOrderId(dto.getOrder_id()) || this.repository.existsByOrderId(order_id)) {
-            throw new ResourceExist("Kindly delete the Invoice", "Order-Id", dto.getOrder_id());
+            throw new ResourceExist("Kindly delete the Invoice", "Order Id", dto.getOrder_id());
         }
 
         Invoice inv = this.mapDtoToEntity(dto);
@@ -50,9 +50,16 @@ public class InvoiceService {
     }
 
     // for delete the existing invoice
-    public void delete(long id){
-        Invoice inv = this.repository.findById(id)
-                .orElseThrow(()-> new ResourceNotFound("Invoice", "Id", id));
+//    public void delete(long id){
+//        Invoice inv = this.repository.findById(id)
+//                .orElseThrow(()-> new ResourceNotFound("Invoice", "Id", id));
+//        this.repository.deleteById(inv.getId());
+//    }
+
+    // for delete the existing invoice
+    public void deleteByOrderId(long id){
+        Invoice inv = this.repository.findByOrderId(id)
+                .orElseThrow(()-> new ResourceNotFound("Invoice with Order", "Id", id));
         this.repository.deleteById(inv.getId());
     }
 

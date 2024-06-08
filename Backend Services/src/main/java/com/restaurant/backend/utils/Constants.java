@@ -34,6 +34,7 @@ public class Constants {
     public static final String EMPTY_MESSAGE = "must not be Empty";
     public static final String MIN_VALUE = "must be greater than or equal to 3";
     public static final String MAX_VALUE = "must be short !!";
+    public static final String LESS_VALUE = "must be greater than or equal to 1 !!";
 
 
 

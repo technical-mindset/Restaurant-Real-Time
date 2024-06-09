@@ -1,0 +1,24 @@
+
+CREATE VIEW monthly_sales AS
+SELECT 
+  io.item_id as id,
+  i."name" AS NAME,
+   COUNT(io.item_id) AS total_order, -- This line is commented out
+  i.price as price_each,
+  SUM(io.price) AS total_revenue,
+  SUM(io.quantity) AS total_sale,
+  TO_CHAR(io.created_at, 'YYYY-MM') AS sale_date
+FROM 
+  item_order io
+INNER JOIN 
+  item i 
+ON 
+  io.item_id = i.id 
+-- WHERE 
+--  TO_CHAR(io.created_at, 'YYYY-MM') LIKE '2024-06%'
+GROUP BY 
+  io.item_id, i."name",i.price, TO_CHAR(io.created_at, 'YYYY-MM')
+--  , TO_CHAR(io.created_at, 'YYYY-MM-DD')
+ORDER BY 
+  sale_date DESC, io.item_id;
+ 

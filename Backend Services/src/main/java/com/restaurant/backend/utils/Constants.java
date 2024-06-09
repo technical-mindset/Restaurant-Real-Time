@@ -13,6 +13,13 @@ public class Constants {
     public static final String SORT_BY = "id";
     public static final String DATE = "1";
 
+    // -----------  ---------  Headers Section For Excel Report --------- ----------
+    public static final String[] HEADERS = {
+      "Id", "Name", "Total Order", "Price", "Total Revenue", "Total Sale", "Sale Date"
+    };
+    public static final String DEAL_REPORT_SHEET_NAME = "Deal_Report";
+    public static final String ITEM_REPORT_SHEET_NAME = "Item_Report";
+
     // -----------  ---------  Response Messages --------- ----------
     public static final String MESSAGE_FETCHED = "Fetched Successfully!";
     public static final String MESSAGE_UPDATED = "Updated Successfully!";

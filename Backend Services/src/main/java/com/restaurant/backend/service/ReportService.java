@@ -1,10 +1,12 @@
 package com.restaurant.backend.service;
 
 import com.restaurant.backend.dao.SaleReportRepository;
+import com.restaurant.backend.helper.ReportHelper;
 import com.restaurant.backend.model.SaleReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -13,32 +15,29 @@ public class ReportService {
     private SaleReportRepository saleReportRepository;
 
     /** Monthly Item Sale Report */
-    public List<SaleReport> monthlyReport(String date){
-        List<SaleReport> saleReports = this.saleReportRepository
+    public ByteArrayInputStream monthlyReport(String date, String reportType){
+       // Sale Item Data
+        List<SaleReport> saleItemReports = this.saleReportRepository
                 .findMonthlySaleBySaleDates(date);
-        return saleReports;
+        // Sale Deal Data
+        List<SaleReport> saleDealReports = this.saleReportRepository
+                .findMonthlyDealSaleBySaleDates(date);
+
+       ByteArrayInputStream in =  ReportHelper.dataToExcel(saleItemReports, saleDealReports, reportType);
+        return in;
     }
 
     /** Daily Item Sale Report */
-    public List<SaleReport> dailyReport(String date){
-        List<SaleReport> saleReports = this.saleReportRepository
+    public ByteArrayInputStream dailyReport(String date, String reportType){
+        // Sale Item Data
+        List<SaleReport> saleItemReports = this.saleReportRepository
                 .findDailySaleBySaleDates(date);
-        return saleReports;
-    }
-
-    /** Monthly Deal Sale Report */
-    public List<SaleReport> monthlyDealReport(String date){
-        List<SaleReport> saleReports = this.saleReportRepository
-                .findMonthlyDealSaleBySaleDates(date);
-        return saleReports;
-    }
-
-    /** Daily Deal Sale Report */
-    public List<SaleReport> dailyDealReport(String date){
-        List<SaleReport> saleReports = this.saleReportRepository
+        // Sale Deal Data
+        List<SaleReport> saleDealReports = this.saleReportRepository
                 .findDailyDealSaleBySaleDates(date);
-        return saleReports;
-    }
 
+        ByteArrayInputStream in =  ReportHelper.dataToExcel(saleItemReports, saleDealReports, reportType);
+        return in;
+    }
 
 }

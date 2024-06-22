@@ -16,8 +16,8 @@ public class Invoice {
     private String paymentMethod;
     @Column(name = "tax")
     private String tax;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", unique = false)
     private Order order;
     @Column(name = "createdBy")
     private String createdBy;

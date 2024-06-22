@@ -38,6 +38,10 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
             throw new ResourceExist("Item-Order", "Id", dto.getId());
         }
         dto.setOrder(id);
+        // adding | updating new Item-Order for existing Order
+        dto.setCreatedAt(LocalDateTime.now());
+        dto.setCreatedBy(this.getUserName());
+
         ItemOrder itemOrder = this.mapDtoToEntity(dto);
 
         ItemOrder itemOrder0 = this.repository.save(itemOrder);
@@ -65,6 +69,18 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
         return this.addItemOrder(dto, id);
     }
 
+    public void deleteItemOrder(long orderId, long id){
+        ItemOrder itemOrder = this.repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("Item-Order", "Id", id));
+
+        if (itemOrder.getOrder().getId() == orderId) { // confirmation that it contains the same orderId which they belong too.
+            this.repository.deleteById(id);
+        }
+        else {
+            throw new ResourceNotFound("Item-Order", "Id", id);
+        }
+    }
+
     // Delete case would be executing from Order service (through order)
     // Get All Item-Order case would be fetched from Order service
 
@@ -75,7 +91,8 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
         BeanUtils.copyProperties(entity, dto);
 
         dto.setOrder(entity.getOrder().getId());
-        dto.setItem(dto.getItem());
+        dto.setItem(entity.getItem().getId());
+
         return dto;
     }
 
@@ -89,6 +106,7 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
                         .orElseThrow(() -> new ResourceNotFound("Order", "Id", dto.getOrder()));
 
         entity.setItem(item);
+        entity.setPrice(item.getPrice() * dto.getQuantity()); // setting the total price of each item-order
         entity.setOrder(order);
 
         if (dto.getId() > 0) {
@@ -99,6 +117,9 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
         }
+
+        entity.setUpdatedBy(this.getUserName());
+        entity.setUpdatedAt(LocalDateTime.now());
         return entity;
     }
 }

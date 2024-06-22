@@ -18,9 +18,13 @@ public class OrderController {
     @Autowired
     private OrderService os;
 
-    @GetMapping
-    public ResponseEntity getAllOrders(){
-        return new ResponseEntity<>(this.os.getOrderOf_24hrs(), HttpStatus.OK);
+    @GetMapping()
+    public ResponseEntity getAllOrders(
+            @RequestParam(value = "date", defaultValue = Constants.DATE, required = false) int date,
+            @RequestParam(value = "pageNumber", defaultValue = Constants.PAGE_NUMBER, required = false) int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = Constants.PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = Constants.SORT_BY, required = false) String sortBy){
+        return new ResponseEntity<>(this.os.getOrdersAccordingToDate(date, pageNumber, pageSize, sortBy), HttpStatus.OK);
     }
 
 
@@ -49,8 +53,16 @@ public class OrderController {
 
     // Delete case
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteOrder(@PathVariable("id") long id){
-        this.os.deleteOrder(id);
+    public ResponseEntity<ApiResponse> delete(@PathVariable("id") long id){
+        this.os.deleteCompleteOrder(id);
+        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, "", true), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/")
+    public ResponseEntity<ApiResponse> deleteOrder(@PathVariable("id") long id,
+                                                   @RequestParam(value = "oid", defaultValue = "0", required = false) int oid,
+                                                   @RequestParam(value = "did", defaultValue = "0", required = false) int did){
+        this.os.deleteOrder(id, oid, did);
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, "", true), HttpStatus.OK);
     }
 }

@@ -7,10 +7,8 @@ import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.model.Deal;
 import com.restaurant.backend.model.DealOrder;
-import com.restaurant.backend.model.ItemOrder;
 import com.restaurant.backend.model.Order;
 import com.restaurant.backend.payloads.DealOrderDTO;
-import com.restaurant.backend.payloads.ItemOrderDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +34,10 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
             throw new ResourceExist("Deal-Order", "Id", dto.getId());
         }
         dto.setOrder(id);
+        // adding | updating new Deal-Order for existing Order
+        dto.setCreatedAt(LocalDateTime.now());
+        dto.setCreatedBy(this.getUserName());
+
         DealOrder dealOrder = this.mapDtoToEntity(dto);
 
         DealOrder dealOrder0 = this.repository.save(dealOrder);
@@ -63,6 +65,18 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
         return this.addDealOrder(dto, id);
     }
 
+    public void deleteDealOrder(long orderId, long id){
+        DealOrder dealOrder = this.repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("Deal-Order", "Id", id));
+
+        if (dealOrder.getOrder().getId() == orderId) { // confirmation that it contains the same orderId which they belong too.
+            this.repository.deleteById(id);
+        }
+        else {
+            throw new ResourceNotFound("Deal-Order", "Id", id);
+        }
+    }
+
     // Delete case would be executing from Order service (through order)
     // Get All Deal-Order case would be fetched from Order service
 
@@ -75,7 +89,7 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
         BeanUtils.copyProperties(entity, dto);
 
         dto.setOrder(entity.getOrder().getId());
-        dto.setDeals(dto.getDeals());
+        dto.setDeals(entity.getDeals().getId());
         return dto;
     }
 
@@ -90,6 +104,7 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
                 .orElseThrow(() -> new ResourceNotFound("Order", "Id", dto.getOrder()));
 
         entity.setDeals(deal);
+        entity.setPrice(deal.getDiscounted_price() * dto.getQuantity());
         entity.setOrder(order);
 
         if (dto.getId() > 0) {

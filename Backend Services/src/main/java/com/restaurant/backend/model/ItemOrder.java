@@ -22,7 +22,7 @@ public class ItemOrder extends BaseEntity {
     private Item item;
 
     // Many-to-one relationship with Order
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "order_id")
     private Order order;
 }

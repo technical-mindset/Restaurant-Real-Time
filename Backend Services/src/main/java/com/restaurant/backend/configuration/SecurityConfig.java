@@ -1,34 +1,25 @@
 package com.restaurant.backend.configuration;
 
+import com.restaurant.backend.security.JwtAuthenticationFilter;
+import com.restaurant.backend.security.JwtAuthenticationEntryPoint;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final JwtAuthenticationEntryPoint point;
+    private final JwtAuthenticationFilter filter;
 
-
-    @Bean // creating bean instead of autowired
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl();
-    }
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+    SecurityConfig(JwtAuthenticationEntryPoint point, JwtAuthenticationFilter filter){
+        this.point = point;
+        this.filter = filter;
     }
     @Bean
     public ModelMapper modelMapper(){
@@ -40,25 +31,18 @@ public class SecurityConfig {
         http
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/order/**").authenticated()
-                        .requestMatchers("/deal/**").authenticated()
-                        .requestMatchers("/item/**").authenticated()
-                        .requestMatchers("/itemcategory/**").authenticated()
-                        .requestMatchers("/itemcategory/**").authenticated()
-                        .requestMatchers("/table/**").authenticated()
-                )
-                .httpBasic(Customizer.withDefaults());
+                        .requestMatchers("/auth/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
+                .exceptionHandling(excep -> excep.authenticationEntryPoint(point))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+//                .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() throws Exception {
-       DaoAuthenticationProvider dao = new DaoAuthenticationProvider();
-       dao.setUserDetailsService(userDetailsService());
-       dao.setPasswordEncoder(passwordEncoder());
 
-       return dao;
-    }
 
 
 }

@@ -35,40 +35,57 @@ public class InvoiceService {
     UserRepository userRepository;
 
     // Generate Invoice
-    public InvoiceDTO generateInvoice(InvoiceRequestDTO dto){
+    public InvoiceDTO generateInvoice(InvoiceRequestDTO dto, long order_id){
         if (this.repository.existsById(dto.getId())) {
             throw new ResourceExist("Invoice", "Id", dto.getId());
         }
-        if (this.orderRepository.existsById(dto.getOrder_id())) {
-            throw new ResourceExist("Order", "Id", dto.getOrder_id());
+        else if (this.repository.existsByOrderId(dto.getOrder_id()) || this.repository.existsByOrderId(order_id)) {
+            throw new ResourceExist("Kindly delete the Invoice", "Order Id", dto.getOrder_id());
         }
+
         Invoice inv = this.mapDtoToEntity(dto);
 
         Invoice invoice = this.repository.save(inv);
-        return this.mapEntityToDto(inv);
+        return this.mapEntityToDto(invoice);
     }
 
+    // for delete the existing invoice
+//    public void delete(long id){
+//        Invoice inv = this.repository.findById(id)
+//                .orElseThrow(()-> new ResourceNotFound("Invoice", "Id", id));
+//        this.repository.deleteById(inv.getId());
+//    }
 
+    // for delete the existing invoice
+    public void deleteByOrderId(long id){
+        Invoice inv = this.repository.findByOrderId(id)
+                .orElseThrow(()-> new ResourceNotFound("Invoice with Order", "Id", id));
+        this.repository.deleteById(inv.getId());
+    }
 
-
+    // ------   Over Ride Methods    ------- //
 
     public InvoiceDTO mapEntityToDto(Invoice entity) {
         InvoiceDTO dto = new InvoiceDTO();
         BeanUtils.copyProperties(entity, dto);
 
         dto.setOrder_id(entity.getOrder().getId());
+        List<OrderInvoiceDTO> deal  = null;
+        List<OrderInvoiceDTO> item  = null;
 
-        List<OrderInvoiceDTO> itm = entity.getOrder().getItemOrders()
-                .stream()
-                .map(e-> new OrderInvoiceDTO(e.getItem().getName(), e.getQuantity(), e.getPrice()))
-                .collect(Collectors.toList());
-        List<OrderInvoiceDTO> deal = entity.getOrder().getDealOrders()
-                .stream()
-                .map(e-> new OrderInvoiceDTO(e.getDeals().getName(), e.getQuantity(), e.getPrice()))
-                .collect(Collectors.toList());
+        if (entity.getOrder().getDealOrders() != null)
+            item = entity.getOrder().getItemOrders()
+                    .stream()
+                    .map(e-> new OrderInvoiceDTO(e.getItem().getName(), e.getQuantity(), e.getPrice()))
+                    .collect(Collectors.toList());
+        if (entity.getOrder().getItemOrders() != null)
+            deal = entity.getOrder().getDealOrders()
+                    .stream()
+                    .map(e-> new OrderInvoiceDTO(e.getDeals().getName(), e.getQuantity(), e.getPrice()))
+                    .collect(Collectors.toList());
 
 
-        dto.setItemOrders(itm);
+        dto.setItemOrders(item);
         dto.setDealOrders(deal);
         dto.setTableCode(entity.getOrder().getTableSitting().getTableCode());
         dto.setTotal(entity.getOrder().getBill());
@@ -78,7 +95,7 @@ public class InvoiceService {
     public Invoice mapDtoToEntity(InvoiceRequestDTO dto) {
         Invoice entity = new Invoice();
         BeanUtils.copyProperties(dto, entity);
-
+        System.out.println("-----------------------------------------");
         Order order = this.orderRepository.findById(dto.getOrder_id())
                 .orElseThrow(()-> new ResourceNotFound("Order", "Id", dto.getOrder_id()));
 

@@ -4,6 +4,7 @@ import com.restaurant.backend.dao.ItemCategoryRepository;
 import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.PaginationResponse;
+import com.restaurant.backend.model.Item;
 import com.restaurant.backend.model.ItemCategory;
 import com.restaurant.backend.payloads.ItemCategoryDTO;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -30,8 +32,9 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
     /** Add & Update Category **/
     public ItemCategoryDTO addCategory(ItemCategoryDTO itemCategoryDTO) {
         ItemCategory itemCategory;
+        Optional<ItemCategory> categoryByName = this.repository.findByName(itemCategoryDTO.getName());
 
-        if (itemCategoryDTO.getId() == 0 && this.repository.findByName(itemCategoryDTO.getName()).isPresent()) {
+        if (itemCategoryDTO.getId() == 0 && categoryByName.isPresent()) {
             throw new ResourceExist("Item Category", "Name", itemCategoryDTO.getName());
         }
         // If ID is provided (indicating an update), check if the entity exists
@@ -39,9 +42,9 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
             itemCategory = this.repository.findById(itemCategoryDTO.getId())
                     .orElseThrow(() -> new ResourceNotFound("Item Category", "Id", itemCategoryDTO.getId()));
             /** for handling the unique or same name case */
-            ItemCategory categoryByName = this.repository.findByName(itemCategoryDTO.getName()).get();
+            categoryByName = this.repository.findByName(itemCategoryDTO.getName());
 
-            if (categoryByName.getId() != itemCategory.getId()) {
+            if (categoryByName.isPresent() && categoryByName.get().getId() != itemCategory.getId()) {
                 throw new ResourceExist("Item Category", "Name", itemCategoryDTO.getName());
             }
 

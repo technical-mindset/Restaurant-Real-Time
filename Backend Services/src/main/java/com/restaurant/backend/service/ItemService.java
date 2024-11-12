@@ -8,6 +8,7 @@ import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.Item;
 import com.restaurant.backend.model.ItemCategory;
+import com.restaurant.backend.payloads.ItemCategoryDTO;
 import com.restaurant.backend.payloads.ItemDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -33,32 +34,51 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     }
 
 
-    // Add Item
-    public ItemDTO addItem(ItemDTO itemDTO){
-         if (this.repository.findByName(itemDTO.getName()).isPresent()) {
+    /** Add & Update Item */
+
+    public ItemDTO addItem(ItemDTO itemDTO) {
+        Item item;
+
+        if (itemDTO.getId() == 0 && this.repository.findByName(itemDTO.getName()).isPresent()) {
             throw new ResourceExist("Item", "Name", itemDTO.getName());
         }
-        Item item = this.mapDtoToEntity(itemDTO);
+        // If ID is provided (indicating an update), check if the entity exists
+        else if (itemDTO.getId() > 0) {
+            item = this.repository.findById(itemDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFound("Item", "Id", itemDTO.getId()));
+            /** for handling the unique or same name case */
+            Item itemByName = this.repository.findByName(itemDTO.getName()).get();
 
-        Item item0 = this.repository.save(item);
-        return  this.mapEntityToDto(item0);
+            if (itemByName.getId() != item.getId()) {
+                throw new ResourceExist("Item", "Name", itemDTO.getName());
+            }
+
+            itemDTO.setCreatedAt(item.getCreatedAt());
+            itemDTO.setCreatedBy(item.getCreatedBy());
+        }
+
+        item = this.mapDtoToEntity(itemDTO);
+
+        /** Save the entity (either new or updated) and return the DTO */
+        Item savedItem = repository.save(item);
+        return this.mapEntityToDto(savedItem);
     }
 
 
     // Update Item
-    public ItemDTO updateItem(ItemDTO itemDTO){
-
-        Item item = this.repository.findById(itemDTO.getId())
-                .orElseThrow(() -> new ResourceNotFound("Item", "'Item Id'", itemDTO.getId()));
-
-        itemDTO.setCreatedAt(item.getCreatedAt());
-        itemDTO.setCreatedBy(item.getCreatedBy());
-
-        Item item0 = this.mapDtoToEntity(itemDTO);
-        Item items = this.repository.save(item0);
-
-        return this.mapEntityToDto(items);
-    }
+//    public ItemDTO updateItem(ItemDTO itemDTO){
+//
+//        Item item = this.repository.findById(itemDTO.getId())
+//                .orElseThrow(() -> new ResourceNotFound("Item", "'Item Id'", itemDTO.getId()));
+//
+//        itemDTO.setCreatedAt(item.getCreatedAt());
+//        itemDTO.setCreatedBy(item.getCreatedBy());
+//
+//        Item item0 = this.mapDtoToEntity(itemDTO);
+//        Item items = this.repository.save(item0);
+//
+//        return this.mapEntityToDto(items);
+//    }
 
 
     // Get All Pageable Item Categories
@@ -78,8 +98,7 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
     }
 
 
-
-    // -------------- Over Ride Methods -------------------
+    /**  --------------- Data mapping methods  -------------------  */
     @Override
     public ItemDTO mapEntityToDto(Item entity) {
         ItemDTO dto = new ItemDTO();
@@ -98,15 +117,11 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
                 .orElseThrow(() -> new ResourceNotFound("ItemCategory", "id", dto.getItemCategory()));
         entity.setItemCategory(itemCategory);
 
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
+        if (dto.getId() == 0) {
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
-
         }
+
         entity.setUpdatedBy(this.getUserName());
         entity.setUpdatedAt(LocalDateTime.now());
 

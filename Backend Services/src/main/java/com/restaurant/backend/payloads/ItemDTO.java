@@ -20,7 +20,7 @@ import lombok.Setter;
 public class ItemDTO extends BaseDTO{
     private long id;
 //    @NotEmpty(message = "Name " + Constants.EMPTY_MESSAGE)
-    @Min(value = 3, message = "Name " + Constants.MIN_VALUE)
+    @Size(min = 3, message = "Name " + Constants.MIN_VALUE)
     private String name;
     private String description;
     @Min(value = 50, message = "Price " + Constants.EMPTY_MESSAGE)

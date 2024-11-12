@@ -29,14 +29,14 @@ public class DealController {
 
 
     // Update case
-    @PutMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> updateDeal(@Valid @RequestBody DealDTO dealDTO){
-
-        return new ResponseEntity<>(new ApiResponse(
-                Constants.MESSAGE_UPDATED,
-                this.dealService.updateDeal(dealDTO),
-                true), HttpStatus.OK);
-    }
+//    @PutMapping(Constants.ADD_UPDATE_URI)
+//    public ResponseEntity<ApiResponse> updateDeal(@Valid @RequestBody DealDTO dealDTO){
+//
+//        return new ResponseEntity<>(new ApiResponse(
+//                Constants.MESSAGE_UPDATED,
+//                this.dealService.updateDeal(dealDTO),
+//                true), HttpStatus.OK);
+//    }
 
 
     // Get All case

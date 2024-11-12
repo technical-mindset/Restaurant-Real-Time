@@ -15,13 +15,13 @@ public class Deal extends BaseEntity {
     private long id;
     private String name;
     @Column(name = "deal_code", unique = true)
-    private int deal_code;
+    private int dealCode;
     @Column(name = "description")
     private String description;
     @Column(name = "actual_price")
-    private double actual_price;
+    private double actualPrice;
     @Column(name = "discounted_price")
-    private double discounted_price;
+    private double discountedPrice;
     @OneToMany(mappedBy = "deals", fetch = FetchType.LAZY)
     private List<DealOrder> dealOrder = new ArrayList<>();
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

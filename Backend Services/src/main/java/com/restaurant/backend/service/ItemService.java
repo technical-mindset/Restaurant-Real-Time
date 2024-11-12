@@ -8,19 +8,17 @@ import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.Item;
 import com.restaurant.backend.model.ItemCategory;
-import com.restaurant.backend.payloads.ItemCategoryDTO;
 import com.restaurant.backend.payloads.ItemDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -38,18 +36,18 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
 
     public ItemDTO addItem(ItemDTO itemDTO) {
         Item item;
+        Optional<Item> itemByName = this.repository.findByName(itemDTO.getName());
 
-        if (itemDTO.getId() == 0 && this.repository.findByName(itemDTO.getName()).isPresent()) {
+        if (itemDTO.getId() == 0 && itemByName.isPresent()) {
             throw new ResourceExist("Item", "Name", itemDTO.getName());
         }
         // If ID is provided (indicating an update), check if the entity exists
         else if (itemDTO.getId() > 0) {
             item = this.repository.findById(itemDTO.getId())
                     .orElseThrow(() -> new ResourceNotFound("Item", "Id", itemDTO.getId()));
-            /** for handling the unique or same name case */
-            Item itemByName = this.repository.findByName(itemDTO.getName()).get();
 
-            if (itemByName.getId() != item.getId()) {
+            /** for handling the unique or same name case */
+            if (itemByName.isPresent() && itemByName.get().getId() != item.getId()) {
                 throw new ResourceExist("Item", "Name", itemDTO.getName());
             }
 

@@ -4,20 +4,15 @@ import com.restaurant.backend.dao.ItemCategoryRepository;
 import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.helper.PaginationResponse;
-import com.restaurant.backend.model.Item;
 import com.restaurant.backend.model.ItemCategory;
 import com.restaurant.backend.payloads.ItemCategoryDTO;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -41,9 +36,8 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
         else if (itemCategoryDTO.getId() > 0) {
             itemCategory = this.repository.findById(itemCategoryDTO.getId())
                     .orElseThrow(() -> new ResourceNotFound("Item Category", "Id", itemCategoryDTO.getId()));
-            /** for handling the unique or same name case */
-            categoryByName = this.repository.findByName(itemCategoryDTO.getName());
 
+            /** for handling the unique or same name case */
             if (categoryByName.isPresent() && categoryByName.get().getId() != itemCategory.getId()) {
                 throw new ResourceExist("Item Category", "Name", itemCategoryDTO.getName());
             }

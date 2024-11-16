@@ -15,7 +15,7 @@ public class Constants {
 
     // -----------  ---------  Headers Section For Excel Report --------- ----------
     public static final String[] HEADERS = {
-      "Id", "Name", "Total Order", "Price", "Total Revenue", "Total Sale", "Sale Date"
+      "No.", "Id", "Name", "Total Order", "Price", "Total Revenue", "Total Sale", "Sale Date"
     };
     public static final String DEAL_REPORT_SHEET_NAME = "Deal_Report";
     public static final String ITEM_REPORT_SHEET_NAME = "Item_Report";

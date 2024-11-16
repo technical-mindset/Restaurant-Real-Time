@@ -133,9 +133,6 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
 
     // Update case
     public OrderDTO updateOrder(CompileOrderDTO dto){
-        System.out.println("========= In Order Update");
-        System.out.println("========= In Order Update");
-        System.out.println("========= In Order Update");
 
         Order order = this.repository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFound("Order", "'Id'", dto.getId()));
@@ -202,7 +199,7 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         TableSitting ts = this.tableSittingRepository.findById(dto.getTableSitting())
                 .orElseThrow(() -> new ResourceNotFound("Table", "Id", dto.getTableSitting()));
         // if the table already reserved
-        if (ts.isReserved()) {
+        if (dto.getId() == 0 && ts.isReserved()) {
             throw new ResourceExist("Table-Reserved", "Id", dto.getTableSitting());
         }
         entity.setTableSitting(ts);

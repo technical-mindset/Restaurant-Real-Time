@@ -104,7 +104,7 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
                 .orElseThrow(() -> new ResourceNotFound("Order", "Id", dto.getOrder()));
 
         entity.setDeals(deal);
-        entity.setPrice(deal.getDiscounted_price() * dto.getQuantity());
+        entity.setPrice(deal.getDiscountedPrice() * dto.getQuantity());
         entity.setOrder(order);
 
         if (dto.getId() > 0) {

@@ -10,5 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportDateDTO {
-    String date;
+    String startDate;
+    String endDate;
+    int check;
 }

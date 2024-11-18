@@ -1,6 +1,5 @@
 package com.restaurant.backend.service;
 
-import com.restaurant.backend.dao.SaleReportRepository;
 import com.restaurant.backend.dao.OrderRepository;
 import com.restaurant.backend.dao.TableSittingRepository;
 import com.restaurant.backend.exception.ResourceExist;
@@ -31,8 +30,6 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
     private ItemOrderService itemOrderService;
     @Autowired
     private DealOrderService dealOrderService;
-    @Autowired
-    private SaleReportRepository spr;
 
     public OrderService(OrderRepository repository) {
         super(repository);

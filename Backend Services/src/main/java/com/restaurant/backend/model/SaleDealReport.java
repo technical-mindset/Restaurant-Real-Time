@@ -7,11 +7,13 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
+import java.io.Serializable;
+
 /** This is a SQL-View for generating the Daily, Weekly, Monthly and Yearly report */
 @Getter
 @Entity
 @Immutable
-public class SaleReport {
+public class SaleDealReport implements Serializable {
 
     @Id // using 'id' as column name because deal_order and item_order both table view's item_id and deal_id ALIAS id
     @Column(name = "unique_number")

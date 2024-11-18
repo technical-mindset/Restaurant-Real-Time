@@ -7,16 +7,13 @@ import com.restaurant.backend.helper.PaginationResponse;
 import com.restaurant.backend.model.ItemCategory;
 import com.restaurant.backend.payloads.ItemCategoryDTO;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -27,23 +24,37 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
         super(repository);
     }
 
-    // Add Category
-    public ItemCategoryDTO addCategory(ItemCategoryDTO itemCategoryDTO){
+    /** Add & Update Category **/
+    public ItemCategoryDTO addCategory(ItemCategoryDTO itemCategoryDTO) {
+        ItemCategory itemCategory;
+        Optional<ItemCategory> categoryByName = this.repository.findByName(itemCategoryDTO.getName());
 
-        if (this.repository.findById(itemCategoryDTO.getId()).isPresent() ) {
-            throw new ResourceExist("Item Category","Id", itemCategoryDTO.getId());
+        if (itemCategoryDTO.getId() == 0 && categoryByName.isPresent()) {
+            throw new ResourceExist("Item Category", "Name", itemCategoryDTO.getName());
         }
-        else if (this.repository.findByName(itemCategoryDTO.getName()).isPresent() ) {
-            throw new ResourceExist("Item Category","Name", itemCategoryDTO.getName());
-        }
-        ItemCategory itemCategory = this.mapDtoToEntity(itemCategoryDTO);
+        // If ID is provided (indicating an update), check if the entity exists
+        else if (itemCategoryDTO.getId() > 0) {
+            itemCategory = this.repository.findById(itemCategoryDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFound("Item Category", "Id", itemCategoryDTO.getId()));
 
-        ItemCategory itemCategory0 = repository.save(itemCategory);
-        return this.mapEntityToDto(itemCategory0);
+            /** for handling the unique or same name case */
+            if (categoryByName.isPresent() && categoryByName.get().getId() != itemCategory.getId()) {
+                throw new ResourceExist("Item Category", "Name", itemCategoryDTO.getName());
+            }
+
+            itemCategoryDTO.setCreatedAt(itemCategory.getCreatedAt());
+            itemCategoryDTO.setCreatedBy(itemCategory.getCreatedBy());
+        }
+
+        itemCategory = this.mapDtoToEntity(itemCategoryDTO);
+
+        /** Save the entity (either new or updated) and return the DTO */
+        ItemCategory savedItemCategory = repository.save(itemCategory);
+        return this.mapEntityToDto(savedItemCategory);
     }
 
 
-    // Get All Pageable Item Categories
+    /** Get All Pageable Item Categories */
     public PaginationResponse getAllCategories(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
@@ -51,24 +62,7 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
     }
 
 
-    // Update category case
-    public ItemCategoryDTO updateCategory(ItemCategoryDTO itemCategoryDTO){
-
-        ItemCategory itemCategory = this.repository.findById(itemCategoryDTO.getId())
-                .orElseThrow(() -> new ResourceNotFound("Item Category", "'Item Id'", itemCategoryDTO.getId()));
-
-        itemCategoryDTO.setCreatedAt(itemCategory.getCreatedAt());
-        itemCategoryDTO.setCreatedBy(itemCategory.getCreatedBy());
-
-        ItemCategory itemCategory0 = this.mapDtoToEntity(itemCategoryDTO);
-        ItemCategory itemCategory00 = this.repository.save(itemCategory0);
-
-        return this.mapEntityToDto(itemCategory00);
-
-    }
-
-
-    // Delete category case
+    /** Delete category case */
     public void deleteCategory(long id){
         ItemCategory itemCategory = this.repository
                 .findById(id)
@@ -92,11 +86,7 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
         ItemCategory entity = new ItemCategory();
         BeanUtils.copyProperties(dto, entity);
 
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
+        if (dto.getId() == 0) {
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
         }

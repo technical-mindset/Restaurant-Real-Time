@@ -38,21 +38,12 @@ public class ItemCategoryController {
 
     }
 
-    // Add case
+    // Add & Update case
     @PostMapping(Constants.ADD_UPDATE_URI)
     public ResponseEntity<ApiResponse> addCategory(@Valid @RequestBody ItemCategoryDTO itemCategoryDTO){
 
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
                 this.itemCategoryService.addCategory(itemCategoryDTO),
-                true), HttpStatus.OK);
-    }
-
-    // Update case
-    @PutMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> updateCategory(@RequestBody ItemCategoryDTO itemCategoryDTO){
-
-        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
-                this.itemCategoryService.updateCategory(itemCategoryDTO),
                 true), HttpStatus.OK);
     }
 

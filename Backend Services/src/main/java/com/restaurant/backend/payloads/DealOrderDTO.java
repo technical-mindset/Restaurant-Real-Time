@@ -16,6 +16,7 @@ import lombok.Setter;
 public class DealOrderDTO extends BaseDTO {
     private long id;
     private double price;
+//    private double disc
     @Min(value = 1, message = "Quantity " + Constants.EMPTY_MESSAGE)
     private int quantity;
 

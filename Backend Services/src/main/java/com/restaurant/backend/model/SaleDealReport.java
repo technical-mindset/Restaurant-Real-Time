@@ -4,15 +4,21 @@ package com.restaurant.backend.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Getter;
+import org.hibernate.annotations.Immutable;
+
+import java.io.Serializable;
 
 /** This is a SQL-View for generating the Daily, Weekly, Monthly and Yearly report */
 @Getter
 @Entity
-public class SaleReport {
+@Immutable
+public class SaleDealReport implements Serializable {
 
     @Id // using 'id' as column name because deal_order and item_order both table view's item_id and deal_id ALIAS id
+    @Column(name = "unique_number")
+    private long number;
+
     @Column(name = "id")
     private long id;
 

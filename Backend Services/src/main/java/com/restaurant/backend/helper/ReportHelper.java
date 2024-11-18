@@ -1,11 +1,11 @@
 package com.restaurant.backend.helper;
 
 
-import com.restaurant.backend.model.SaleReport;
+import com.restaurant.backend.model.SaleDealReport;
+import com.restaurant.backend.model.SaleItemReport;
 import com.restaurant.backend.utils.Constants;
 import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ReportHelper {
 
-    public static ByteArrayInputStream dataToExcel(List<SaleReport> saleDealReports, List<SaleReport> saleItemReports, String reportType){
+    public static ByteArrayInputStream dataToExcel(List<SaleItemReport> saleItemReports , List<SaleDealReport> saleDealReports, String reportType){
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Workbook workbook = new XSSFWorkbook();
 
@@ -31,20 +31,22 @@ public class ReportHelper {
             Row rowDeal = headers(sheetDeal.createRow(0), Constants.HEADERS, headerStyle);
 
 
-            // Creation of rows and setting up formula for ITEM
-            for (int i = 0; i <saleDealReports.size() ; i++) {
-              Row dataRow = contentSheet(saleDealReports.get(i), sheetItem, i);
+            // Creation of rows and setting up formula for Item
+            for (int i = 0; i <saleItemReports.size() ; i++) {
+                Row dataRow = contentSheet(saleItemReports.get(i), sheetItem, i);
             }
             FormulaEvaluator evaluatorItem = workbook.getCreationHelper().createFormulaEvaluator();
             evaluatorItem.evaluateFormulaCell(sumTheRevenue(sheetItem, workbook));
 
 
-            // Creation of rows and setting up formula for DEAL
-            for (int i = 0; i <saleItemReports.size() ; i++) {
-              Row dataRow = contentSheet(saleItemReports.get(i), sheetDeal, i);
+
+            // Creation of rows and setting up formula for Deal
+            for (int i = 0; i <saleDealReports.size() ; i++) {
+              Row dataRow = contentSheetDeal(saleDealReports.get(i), sheetDeal, i);
             }
             FormulaEvaluator evaluatorDeal = workbook.getCreationHelper().createFormulaEvaluator();
             evaluatorDeal.evaluateFormulaCell(sumTheRevenue(sheetDeal, workbook));
+
 
 
             for (int i = 0; i < Constants.HEADERS.length; i++) {
@@ -111,15 +113,29 @@ public class ReportHelper {
 
 
     /** for creation of row and mapping data to them. */
-    public static Row contentSheet(SaleReport saleReport, Sheet sheet, int index){
+    public static Row contentSheet(SaleItemReport saleReport, Sheet sheet, int index){
         Row dataRow = sheet.createRow(index + 1); // creating the row from 1st position
-        dataRow.createCell(0).setCellValue(saleReport.getId());
-        dataRow.createCell(1).setCellValue(saleReport.getName());
-        dataRow.createCell(2).setCellValue(saleReport.getTotalOrder());
-        dataRow.createCell(3).setCellValue(saleReport.getPriceEach());
-        dataRow.createCell(4).setCellValue(saleReport.getTotalRevenue());
-        dataRow.createCell(5).setCellValue(saleReport.getTotalSale());
-        dataRow.createCell(6).setCellValue(saleReport.getSaleDate());
+        dataRow.createCell(0).setCellValue(saleReport.getNumber());
+        dataRow.createCell(1).setCellValue(saleReport.getId());
+        dataRow.createCell(2).setCellValue(saleReport.getName());
+        dataRow.createCell(3).setCellValue(saleReport.getTotalOrder());
+        dataRow.createCell(4).setCellValue(saleReport.getPriceEach());
+        dataRow.createCell(5).setCellValue(saleReport.getTotalRevenue());
+        dataRow.createCell(6).setCellValue(saleReport.getTotalSale());
+        dataRow.createCell(7).setCellValue(saleReport.getSaleDate());
+        return dataRow;
+    }
+
+    public static Row contentSheetDeal(SaleDealReport saleReport, Sheet sheet, int index){
+        Row dataRow = sheet.createRow(index + 1); // creating the row from 1st position
+        dataRow.createCell(0).setCellValue(saleReport.getNumber());
+        dataRow.createCell(1).setCellValue(saleReport.getId());
+        dataRow.createCell(2).setCellValue(saleReport.getName());
+        dataRow.createCell(3).setCellValue(saleReport.getTotalOrder());
+        dataRow.createCell(4).setCellValue(saleReport.getPriceEach());
+        dataRow.createCell(5).setCellValue(saleReport.getTotalRevenue());
+        dataRow.createCell(6).setCellValue(saleReport.getTotalSale());
+        dataRow.createCell(7).setCellValue(saleReport.getSaleDate());
         return dataRow;
     }
 }

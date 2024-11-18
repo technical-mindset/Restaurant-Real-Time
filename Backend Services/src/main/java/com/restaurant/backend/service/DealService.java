@@ -11,7 +11,6 @@ import com.restaurant.backend.payloads.DealDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,43 +32,32 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     }
 
 
-    // Add case
+    /** Add & Update Item */
     public DealDTO addDeal(DealDTO dealDTO){
+        Deal deal;
+        Optional<Deal> dealByName = this.repository.findByName(dealDTO.getName());
 
-        if (this.repository.findById(dealDTO.getId()).isPresent()) {
-            throw new ResourceExist("Deal", "Id", dealDTO.getId());
+        if (dealDTO.getId() == 0 && dealByName.isPresent()) {
+            throw new ResourceExist("Deal", "name", dealDTO.getName());
         }
-        else if (this.itemRepository.findByName(dealDTO.getName()).isPresent()) {
-            throw new ResourceExist("deal", "name", dealDTO.getName());
+        // If ID is provided (indicating an update), check if the entity exists
+        else if (dealDTO.getId() > 0) {
+            deal = this.repository.findById(dealDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFound("Deal", "Id", dealDTO.getId()));
+
+            /** for handling the unique or same name case */
+            if (dealByName.isPresent() && dealByName.get().getId() != deal.getId())
+                throw new ResourceExist("Deal", "name", dealDTO.getName());
+
+            dealDTO.setCreatedAt(deal.getCreatedAt());
+            dealDTO.setCreatedBy(deal.getCreatedBy());
         }
-        Deal deal = this.mapDtoToEntity(dealDTO);
+
+        deal = this.mapDtoToEntity(dealDTO);
 
         Deal deal0 = this.repository.save(deal);
         return  this.mapEntityToDto(deal0);
 
-    }
-
-
-    // Update case
-    public DealDTO updateDeal(DealDTO dealDTO){
-
-        Deal deal = this.repository.findById(dealDTO.getId())
-                .orElseThrow(() -> new ResourceNotFound("Deal", "'deal Id'", dealDTO.getId()));
-
-        /** if the user would not send these values while updating the deal so,*/
-        dealDTO.setCreatedAt(deal.getCreatedAt());
-        dealDTO.setCreatedBy(deal.getCreatedBy());
-        if (dealDTO.getDeal_code() <= 0) {
-            dealDTO.setDeal_code(deal.getDeal_code());
-        }
-        if (dealDTO.getDescription() == null) {
-            dealDTO.setDescription(deal.getDescription());
-        }
-
-        Deal deal0 = this.mapDtoToEntity(dealDTO);
-        Deal deal00 = this.repository.save(deal0);
-
-        return this.mapEntityToDto(deal00);
     }
 
 
@@ -117,19 +106,16 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
             throw new ResourceNotFound("Items", "Ids", dto.getItems());
         }
 
-        double totalSum = 0; // for adding all items price
+        /** For Calculating the actual price of deal with respect to its items. */
+        double totalSum = 0;
         for (Item i: items){
             totalSum += i.getPrice();
         }
 
-        entity.setActual_price(totalSum);
+        entity.setActualPrice(totalSum);
         entity.setItems(items);
 
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
+        if (dto.getId() == 0) {
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
         }

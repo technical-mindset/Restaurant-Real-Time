@@ -52,6 +52,7 @@ public abstract class BaseService<E, D extends BaseDTO, R extends JpaRepository<
     public String getUserName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = this.userRepository.findByUsername(authentication.getName()).get();
+//        User user = this.userRepository.findByUsername("shahid").get();
         return user.getUsername();
     }
 }

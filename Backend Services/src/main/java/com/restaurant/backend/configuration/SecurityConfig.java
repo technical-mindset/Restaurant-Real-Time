@@ -21,10 +21,6 @@ public class SecurityConfig {
         this.point = point;
         this.filter = filter;
     }
-    @Bean
-    public ModelMapper modelMapper(){
-        return new ModelMapper();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{

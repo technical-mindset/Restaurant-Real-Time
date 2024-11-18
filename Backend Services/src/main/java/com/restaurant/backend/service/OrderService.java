@@ -1,6 +1,5 @@
 package com.restaurant.backend.service;
 
-import com.restaurant.backend.dao.SaleReportRepository;
 import com.restaurant.backend.dao.OrderRepository;
 import com.restaurant.backend.dao.TableSittingRepository;
 import com.restaurant.backend.exception.ResourceExist;
@@ -31,8 +30,6 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
     private ItemOrderService itemOrderService;
     @Autowired
     private DealOrderService dealOrderService;
-    @Autowired
-    private SaleReportRepository spr;
 
     public OrderService(OrderRepository repository) {
         super(repository);
@@ -133,9 +130,6 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
 
     // Update case
     public OrderDTO updateOrder(CompileOrderDTO dto){
-        System.out.println("========= In Order Update");
-        System.out.println("========= In Order Update");
-        System.out.println("========= In Order Update");
 
         Order order = this.repository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFound("Order", "'Id'", dto.getId()));
@@ -202,7 +196,7 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         TableSitting ts = this.tableSittingRepository.findById(dto.getTableSitting())
                 .orElseThrow(() -> new ResourceNotFound("Table", "Id", dto.getTableSitting()));
         // if the table already reserved
-        if (ts.isReserved()) {
+        if (dto.getId() == 0 && ts.isReserved()) {
             throw new ResourceExist("Table-Reserved", "Id", dto.getTableSitting());
         }
         entity.setTableSitting(ts);

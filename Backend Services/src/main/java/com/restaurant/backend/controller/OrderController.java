@@ -3,7 +3,6 @@ package com.restaurant.backend.controller;
 
 import com.restaurant.backend.helper.ApiResponse;
 import com.restaurant.backend.payloads.CompileOrderDTO;
-import com.restaurant.backend.payloads.OrderDTO;
 import com.restaurant.backend.service.OrderService;
 import com.restaurant.backend.utils.Constants;
 import jakarta.validation.Valid;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(Constants.Order_URI)
 public class OrderController {
     @Autowired
-    private OrderService os;
+    private OrderService orderService;
 
     @GetMapping()
     public ResponseEntity getAllOrders(
@@ -24,7 +23,7 @@ public class OrderController {
             @RequestParam(value = "pageNumber", defaultValue = Constants.PAGE_NUMBER, required = false) int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = Constants.PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = Constants.SORT_BY, required = false) String sortBy){
-        return new ResponseEntity<>(this.os.getOrdersAccordingToDate(date, pageNumber, pageSize, sortBy), HttpStatus.OK);
+        return new ResponseEntity<>(this.orderService.getOrdersAccordingToDate(date, pageNumber, pageSize, sortBy), HttpStatus.OK);
     }
 
 
@@ -32,14 +31,14 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getOrderById(@PathVariable("id") long id){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_FETCHED,
-                this.os.getOrderById(id), true), HttpStatus.OK);
+                this.orderService.getOrderById(id), true), HttpStatus.OK);
     }
 
     // Add case
     @PostMapping(Constants.ADD_UPDATE_URI)
     public ResponseEntity<ApiResponse> addOrder(@Valid @RequestBody CompileOrderDTO compileOrderDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
-                this.os.addOrder(compileOrderDTO), true),
+                this.orderService.addOrder(compileOrderDTO), true),
                 HttpStatus.OK);
     }
 
@@ -47,14 +46,14 @@ public class OrderController {
     @PutMapping(Constants.ADD_UPDATE_URI + "/{id}")
     public ResponseEntity<ApiResponse> updateOrder(@Valid @RequestBody CompileOrderDTO compileOrderDTO, @PathVariable("id") long id){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
-                this.os.updateOrder(compileOrderDTO), true),
+                this.orderService.updateOrder(compileOrderDTO), true),
                 HttpStatus.OK);
     }
 
     // Delete case
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> delete(@PathVariable("id") long id){
-        this.os.deleteCompleteOrder(id);
+        this.orderService.deleteCompleteOrder(id);
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, "", true), HttpStatus.OK);
     }
 
@@ -62,7 +61,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse> deleteOrder(@PathVariable("id") long id,
                                                    @RequestParam(value = "oid", defaultValue = "0", required = false) int oid,
                                                    @RequestParam(value = "did", defaultValue = "0", required = false) int did){
-        this.os.deleteOrder(id, oid, did);
+        this.orderService.deleteOrder(id, oid, did);
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_DELETED, "", true), HttpStatus.OK);
     }
 }

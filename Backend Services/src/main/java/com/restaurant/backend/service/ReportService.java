@@ -16,7 +16,7 @@ public class ReportService {
     private SaleReportRepoImpl saleReportRepository;
 
     /** Sale Report */
-    public ByteArrayInputStream dailyReport(String startDate, String endDate, String reportType, int check){
+    public ByteArrayInputStream dailyReport(String startDate, String endDate, int check){
         // Sale Item Data
         List<SaleItemReport> saleItemReports = this.saleReportRepository
                 .findItemsBetweenDates(startDate, endDate, check);
@@ -25,8 +25,25 @@ public class ReportService {
         List<SaleDealReport> saleDealReports = this.saleReportRepository
                 .findDealBetweenDates(startDate, endDate, check);
 
-        ByteArrayInputStream in =  ReportHelper.dataToExcel(saleItemReports, saleDealReports, reportType);
+        ByteArrayInputStream in =  ReportHelper.dataToExcel(saleItemReports, saleDealReports, reportType(check));
         return in;
+    }
+
+    /**  For dynamically name for report on the basis of report  */
+    private String reportType(int flag){
+        String reportName = "";
+        switch (flag){
+            case 1:
+                reportName = "Daily";
+            case 2:
+                reportName = "Monthly";
+            case 3:
+                reportName = "Yearly";
+            default:
+                reportName = "Normal";
+
+        }
+        return reportName;
     }
 
 }

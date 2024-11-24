@@ -22,7 +22,7 @@ public class ReportController {
 
     @GetMapping
     public ResponseEntity<Resource> dailyReport(@RequestBody ReportDateDTO dto){
-        ByteArrayInputStream byteArrayInputStream = this.reportService.dailyReport(dto.getStartDate(), dto.getEndDate(), "Normal", dto.getCheck());
+        ByteArrayInputStream byteArrayInputStream = this.reportService.dailyReport(dto.getStartDate(), dto.getEndDate(), dto.getCheck());
         InputStreamResource file = new InputStreamResource(byteArrayInputStream);
 
         return ResponseEntity.ok()

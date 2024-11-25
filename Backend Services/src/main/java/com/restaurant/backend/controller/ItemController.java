@@ -34,7 +34,7 @@ public class ItemController {
     @PostMapping(Constants.ADD_UPDATE_URI)
     public ResponseEntity<ApiResponse> addItem(@Valid @RequestBody ItemDTO itemDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
-                this.itemService.addItem(itemDTO),
+                this.itemService.addUpdate(itemDTO),
                 true), HttpStatus.OK);
     }
 

@@ -21,7 +21,7 @@ public class TableSitting extends BaseEntity {
     private int tableCode;
 
     @Column(name = "is_reserved", nullable = false)
-    private boolean isReserved;
+    private boolean reserved;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)

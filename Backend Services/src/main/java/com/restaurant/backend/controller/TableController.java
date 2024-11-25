@@ -2,8 +2,6 @@ package com.restaurant.backend.controller;
 
 
 import com.restaurant.backend.helper.ApiResponse;
-import com.restaurant.backend.model.TableSitting;
-import com.restaurant.backend.payloads.ItemDTO;
 import com.restaurant.backend.payloads.TableSittingAdminDTO;
 import com.restaurant.backend.payloads.TableSittingDTO;
 import com.restaurant.backend.service.TableSittingService;
@@ -42,19 +40,11 @@ public class TableController {
                 true), HttpStatus.OK);
     }
 
-    // Add Table
+    // Add & Update Table
     @PostMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> addTable(@Valid @RequestBody TableSittingAdminDTO tableSittingAdminDTO){
+    public ResponseEntity<ApiResponse> addUpdate(@Valid @RequestBody TableSittingAdminDTO tableSittingAdminDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
-                this.service.addTable(tableSittingAdminDTO),
-                true), HttpStatus.OK);
-    }
-
-    // Update Table
-    @PutMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> updateTable(@Valid @RequestBody TableSittingAdminDTO tableSittingAdminDTO){
-        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
-                this.service.updateTable(tableSittingAdminDTO),
+                this.service.addUpdate(tableSittingAdminDTO),
                 true), HttpStatus.OK);
     }
 

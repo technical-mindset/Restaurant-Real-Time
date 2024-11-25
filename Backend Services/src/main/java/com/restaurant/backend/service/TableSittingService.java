@@ -12,13 +12,12 @@ import com.restaurant.backend.payloads.TableSittingDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -54,38 +53,33 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
     }
 
 
-    // =========================== Methods for admin use only ===========================
-    public TableSittingAdminDTO addTable(TableSittingAdminDTO dto){
-        if (this.repository.findById(dto.getId()).isPresent()) {
-            throw new ResourceExist("Table", "Id", dto.getId());
+    /** Add & Update Table */
+    public TableSittingAdminDTO addUpdate(TableSittingAdminDTO dto){
+        TableSitting table;
+        Optional<TableSitting> tableByCode = this.repository.findByTableCode(dto.getTableCode());
+
+        if (dto.getId() == 0 && tableByCode.isPresent()) {
+            throw new ResourceExist("Table", "Id", tableByCode.get().getId());
         }
-        else if (this.repository.findByTableCode(dto.getTableCode()).isPresent()) {
-            throw new ResourceExist("Table", "code", dto.getTableCode());
-        }
-        TableSitting table = this.mapDtoToEntity(dto);
-        System.out.println(table.getTableCode());
-        System.out.println(table.getRestaurant().getCity());
+        // If ID is provided (indicating an update), check if the entity exists
+        else if (dto.getId() > 0) {
+            table = this.repository.findById(dto.getId())
+                    .orElseThrow(() -> new ResourceNotFound("Table", "Id", dto.getId()));;
 
-        TableSitting tableSitting = this.repository.save(table);
-        return  this.mapEntityToDto(tableSitting);
-    }
+            /** for handling the unique or same name case */
+            if (tableByCode.isPresent() && tableByCode.get().getId() != table.getId()) {
+                throw new ResourceExist("Table", "code", dto.getTableCode());
+            }
 
-
-    // update case
-    public TableSittingAdminDTO updateTable(TableSittingAdminDTO dto){
-        if (this.repository.findByTableCode(dto.getTableCode()).isPresent()) {
-            throw new ResourceExist("Table", "code", dto.getTableCode());
+            dto.setCreatedAt(table.getCreatedAt());
+            dto.setCreatedBy(table.getCreatedBy());
         }
 
-        TableSitting tableSitting = this.repository.findById(dto.getId())
-                .orElseThrow(() -> new ResourceNotFound("Table", "Id", dto.getId()));
+        table = this.mapDtoToEntity(dto);
 
-        dto.setCreatedAt(tableSitting.getCreatedAt());
-        dto.setCreatedBy(tableSitting.getCreatedBy());
-
-        TableSitting table = this.mapDtoToEntity(dto);
-        TableSitting sitting = this.repository.save(table);
-        return this.mapEntityToDto(sitting);
+        /** Save the entity (either new or updated) and return the DTO */
+        TableSitting savedTable = this.repository.save(table);
+        return  this.mapEntityToDto(savedTable);
     }
 
 
@@ -98,9 +92,7 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
     }
 
 
-
-
-    // -------------- Over Ride Methods -------------------
+    // -------------- Mapping methods -------------------
 
     @Override
     public TableSittingAdminDTO mapEntityToDto(TableSitting entity) {
@@ -117,20 +109,15 @@ public class TableSittingService extends BaseService<TableSitting, TableSittingA
         TableSitting entity = new TableSitting();
         BeanUtils.copyProperties(dto, entity);
 
-        Restaurant restaurant = this.restaurantRepositroy.findById(dto.getRestaurantId())
+        Restaurant restaurant = this.restaurantRepositroy.findById((long) 1)
                 .orElseThrow(()->new ResourceNotFound("Restaurant", "Id", dto.getRestaurantId()));
         entity.setRestaurant(restaurant);
 
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
+        if (dto.getId() == 0) {
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
-            entity.setUpdatedBy(this.getUserName());
-
         }
+
         entity.setUpdatedBy(this.getUserName());
         entity.setUpdatedAt(LocalDateTime.now());
         return entity;

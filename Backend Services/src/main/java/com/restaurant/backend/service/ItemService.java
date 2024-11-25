@@ -34,49 +34,33 @@ public class ItemService extends BaseService<Item, ItemDTO, ItemRepository>{
 
     /** Add & Update Item */
 
-    public ItemDTO addItem(ItemDTO itemDTO) {
+    public ItemDTO addUpdate(ItemDTO dto) {
         Item item;
-        Optional<Item> itemByName = this.repository.findByName(itemDTO.getName());
+        Optional<Item> itemByName = this.repository.findByName(dto.getName());
 
-        if (itemDTO.getId() == 0 && itemByName.isPresent()) {
-            throw new ResourceExist("Item", "Name", itemDTO.getName());
+        if (dto.getId() == 0 && itemByName.isPresent()) {
+            throw new ResourceExist("Item", "Name", dto.getName());
         }
         // If ID is provided (indicating an update), check if the entity exists
-        else if (itemDTO.getId() > 0) {
-            item = this.repository.findById(itemDTO.getId())
-                    .orElseThrow(() -> new ResourceNotFound("Item", "Id", itemDTO.getId()));
+        else if (dto.getId() > 0) {
+            item = this.repository.findById(dto.getId())
+                    .orElseThrow(() -> new ResourceNotFound("Item", "Id", dto.getId()));
 
             /** for handling the unique or same name case */
             if (itemByName.isPresent() && itemByName.get().getId() != item.getId()) {
-                throw new ResourceExist("Item", "Name", itemDTO.getName());
+                throw new ResourceExist("Item", "Name", dto.getName());
             }
 
-            itemDTO.setCreatedAt(item.getCreatedAt());
-            itemDTO.setCreatedBy(item.getCreatedBy());
+            dto.setCreatedAt(item.getCreatedAt());
+            dto.setCreatedBy(item.getCreatedBy());
         }
 
-        item = this.mapDtoToEntity(itemDTO);
+        item = this.mapDtoToEntity(dto);
 
         /** Save the entity (either new or updated) and return the DTO */
         Item savedItem = repository.save(item);
         return this.mapEntityToDto(savedItem);
     }
-
-
-    // Update Item
-//    public ItemDTO updateItem(ItemDTO itemDTO){
-//
-//        Item item = this.repository.findById(itemDTO.getId())
-//                .orElseThrow(() -> new ResourceNotFound("Item", "'Item Id'", itemDTO.getId()));
-//
-//        itemDTO.setCreatedAt(item.getCreatedAt());
-//        itemDTO.setCreatedBy(item.getCreatedBy());
-//
-//        Item item0 = this.mapDtoToEntity(itemDTO);
-//        Item items = this.repository.save(item0);
-//
-//        return this.mapEntityToDto(items);
-//    }
 
 
     // Get All Pageable Item Categories

@@ -5,10 +5,6 @@ import com.restaurant.backend.payloads.ItemCategoryDTO;
 import com.restaurant.backend.service.ItemCategoryService;
 import com.restaurant.backend.utils.Constants;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +39,7 @@ public class ItemCategoryController {
     public ResponseEntity<ApiResponse> addCategory(@Valid @RequestBody ItemCategoryDTO itemCategoryDTO){
 
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
-                this.itemCategoryService.addCategory(itemCategoryDTO),
+                this.itemCategoryService.addUpdate(itemCategoryDTO),
                 true), HttpStatus.OK);
     }
 

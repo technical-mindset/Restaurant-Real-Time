@@ -22,7 +22,7 @@ public class ItemOrderDTO extends BaseDTO {
     private double price;
 
     // it takes only id of item and order instead of complete objects when order would be placed
-    @NotNull(message = "Item " + Constants.EMPTY_MESSAGE)
+    @Min(value = 1, message = "Item " + Constants.EMPTY_MESSAGE)
     private long item;
     private long order;
 }

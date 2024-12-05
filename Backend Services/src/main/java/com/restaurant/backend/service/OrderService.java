@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -95,14 +96,29 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
     }
 
 
-    // Add case
-    public CompileOrderDTO addOrder(CompileOrderDTO dto){
-        if (this.repository.findById(dto.getId()).isPresent()) {
-            throw new ResourceNotFound("Order", "Id", dto.getId());
-        }
-
+    // Add & Update case
+    public CompileOrderDTO addUpdate(CompileOrderDTO dto){
+        Order order;
+        Optional<Order> optionalOrder = this.repository.findById(dto.getId());
         OrderDTO orderDTO = new OrderDTO(dto.getId(), dto.getBill(), dto.getTableSitting());
-        Order order = this.mapDtoToEntity(orderDTO);
+
+        if (dto.getId() == 0 && optionalOrder.isEmpty()) {
+//            throw new ResourceNotFound("Order", "Id", dto.getId());
+        }
+        else if (dto.getId() > 0 && dto.getTableSitting() == optionalOrder.get().getTableSitting().getId()) {
+            if (optionalOrder.isPresent()) {
+                order = optionalOrder.get();
+                orderDTO.setCreatedAt(order.getCreatedAt());
+                orderDTO.setCreatedBy(order.getCreatedBy());
+            }
+            else {
+                throw new ResourceNotFound("Order", "Id", dto.getId());
+            }
+        }
+        else {
+            throw new ResourceExist("Table-Reserved", "Id", dto.getTableSitting());
+        }
+        order = this.mapDtoToEntity(orderDTO);
         Order entity = this.repository.save(order);
 
         List<ItemOrderDTO> itemOrderDTOS = null;
@@ -111,7 +127,7 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         if (dto.getItemOrder() != null) {
             itemOrderDTOS = dto.getItemOrder()
                     .stream()
-                    .map(e->this.itemOrderService.addItemOrder(e, entity.getId()))
+                    .map(e->this.itemOrderService.addUpdate(e, entity.getId()))
                     .collect(Collectors.toList());
 
         }
@@ -119,7 +135,7 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         if (dto.getDealOrder() != null) {
             dealOrderDTOS = dto.getDealOrder()
                     .stream()
-                    .map(e->this.dealOrderService.addDealOrder(e, entity.getId()))
+                    .map(e->this.dealOrderService.addUpdate(e, entity.getId()))
                     .collect(Collectors.toList());
         }
 
@@ -128,36 +144,6 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
                 itemOrderDTOS, dealOrderDTOS);
     }
 
-    // Update case
-    public OrderDTO updateOrder(CompileOrderDTO dto){
-
-        Order order = this.repository.findById(dto.getId())
-                .orElseThrow(() -> new ResourceNotFound("Order", "'Id'", dto.getId()));
-
-        OrderDTO orderDTO = new OrderDTO(dto.getId(), dto.getBill(), dto.getTableSitting());
-        orderDTO.setCreatedAt(order.getCreatedAt());
-        orderDTO.setCreatedBy(order.getCreatedBy());
-
-        Order order0 = this.mapDtoToEntity(orderDTO);
-        Order entity = this.repository.save(order0);
-
-        if (dto.getItemOrder() != null)
-//        List<ItemOrderDTO> itemOrder =
-                dto.getItemOrder()
-                .stream()
-                .map(e->this.itemOrderService.updateItemOrder(e, entity.getId()))
-                .collect(Collectors.toList());
-
-        if (dto.getDealOrder() != null)
-//            List<DealOrderDTO> dealOrder =
-                    dto.getDealOrder()
-                    .stream()
-                    .map(e->this.dealOrderService.updateDealOrder(e, entity.getId()))
-                    .collect(Collectors.toList());
-
-
-        return this.mapEntityToDto(entity);
-    }
 
     // Delete case
     public void deleteCompleteOrder(long id) {
@@ -199,6 +185,9 @@ public class OrderService extends BaseService<Order, OrderDTO, OrderRepository>{
         if (dto.getId() == 0 && ts.isReserved()) {
             throw new ResourceExist("Table-Reserved", "Id", dto.getTableSitting());
         }
+        // if the is not reserved and free for order
+        ts.setReserved(true);
+        ts = this.tableSittingRepository.save(ts);
         entity.setTableSitting(ts);
 
         if (dto.getId() > 0) {

@@ -49,12 +49,6 @@ public class InvoiceService {
         return this.mapEntityToDto(invoice);
     }
 
-    // for delete the existing invoice
-//    public void delete(long id){
-//        Invoice inv = this.repository.findById(id)
-//                .orElseThrow(()-> new ResourceNotFound("Invoice", "Id", id));
-//        this.repository.deleteById(inv.getId());
-//    }
 
     // for delete the existing invoice
     public void deleteByOrderId(long id){
@@ -84,11 +78,11 @@ public class InvoiceService {
                     .map(e-> new OrderInvoiceDTO(e.getDeals().getName(), e.getQuantity(), e.getPrice()))
                     .collect(Collectors.toList());
 
-
+double totalWithTax = entity.getOrder().getBill() * (12.3 / 100);
         dto.setItemOrders(item);
         dto.setDealOrders(deal);
         dto.setTableCode(entity.getOrder().getTableSitting().getTableCode());
-        dto.setTotal(entity.getOrder().getBill());
+        dto.setTotal(totalWithTax);
         return dto;
     }
 
@@ -99,14 +93,8 @@ public class InvoiceService {
         Order order = this.orderRepository.findById(dto.getOrder_id())
                 .orElseThrow(()-> new ResourceNotFound("Order", "Id", dto.getOrder_id()));
 
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
-            entity.setCreatedAt(LocalDateTime.now());
-            entity.setCreatedBy(this.getUserName());
-        }
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setCreatedBy(this.getUserName());
 
         entity.setOrder(order);
         return entity;

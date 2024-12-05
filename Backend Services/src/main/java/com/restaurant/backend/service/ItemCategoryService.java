@@ -25,7 +25,7 @@ public class ItemCategoryService extends BaseService<ItemCategory, ItemCategoryD
     }
 
     /** Add & Update Category **/
-    public ItemCategoryDTO addCategory(ItemCategoryDTO itemCategoryDTO) {
+    public ItemCategoryDTO addUpdate(ItemCategoryDTO itemCategoryDTO) {
         ItemCategory itemCategory;
         Optional<ItemCategory> categoryByName = this.repository.findByName(itemCategoryDTO.getName());
 

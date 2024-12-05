@@ -4,12 +4,10 @@ package com.restaurant.backend.service;
 import com.restaurant.backend.dao.ItemOrderRepository;
 import com.restaurant.backend.dao.ItemRepository;
 import com.restaurant.backend.dao.OrderRepository;
-import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.model.Item;
 import com.restaurant.backend.model.ItemOrder;
 import com.restaurant.backend.model.Order;
-import com.restaurant.backend.payloads.ItemDTO;
 import com.restaurant.backend.payloads.ItemOrderDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -32,48 +30,45 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
     }
 
 
-    // Add Case
-    public ItemOrderDTO addItemOrder(ItemOrderDTO dto, long id){
-        if (this.repository.findById(dto.getId()).isPresent()) {
-            throw new ResourceExist("Item-Order", "Id", dto.getId());
+    /** Add & Update Category **/
+    public ItemOrderDTO addUpdate(ItemOrderDTO dto, long id){
+        ItemOrder itemOrder;
+        Optional<ItemOrder> optionalItemOrder = this.repository.findById(dto.getId());
+
+        /** for add case */
+        if (dto.getId() == 0 && optionalItemOrder.isEmpty()) {
+            // adding | updating new Item-Order for existing Order
+            dto.setCreatedAt(LocalDateTime.now());
+            dto.setCreatedBy(this.getUserName());
         }
-        dto.setOrder(id);
-        // adding | updating new Item-Order for existing Order
-        dto.setCreatedAt(LocalDateTime.now());
-        dto.setCreatedBy(this.getUserName());
+        /** for update case */
+        else if (dto.getId() > 0) {
+            if (optionalItemOrder.isPresent()) {
+                itemOrder = optionalItemOrder.get();
 
-        ItemOrder itemOrder = this.mapDtoToEntity(dto);
-
-        ItemOrder itemOrder0 = this.repository.save(itemOrder);
-        return this.mapEntityToDto(itemOrder0);
-    }
-
-    // Update case
-    public ItemOrderDTO updateItemOrder(ItemOrderDTO dto, long id){
-        dto.setOrder(id);
-
-        if (this.repository.findById(dto.getId()).isPresent()) {
-            // if someone edit the old item-Order
-            ItemOrder itemOrder = this.repository.findById(dto.getId()).get();
-
-            dto.setCreatedAt(itemOrder.getCreatedAt());
-            dto.setCreatedBy(itemOrder.getCreatedBy());
-
-            ItemOrder itemOrder0 = this.mapDtoToEntity(dto);
-            ItemOrder itemOrderSave = this.repository.save(itemOrder0);
-
-            return this.mapEntityToDto(itemOrderSave);
+                // adding | updating new Item-Order for existing Order
+                dto.setCreatedAt(itemOrder.getCreatedAt());
+                dto.setCreatedBy(itemOrder.getCreatedBy());
+            }
+            else {
+                throw new ResourceNotFound("Item Order", "Id", dto.getId());
+            }
         }
 
-        // either it adds new item-order into order
-        return this.addItemOrder(dto, id);
+        dto.setOrder(id);
+        itemOrder = this.mapDtoToEntity(dto);
+
+        /** Save the entity (either new or updated) and return the DTO */
+        ItemOrder savedItemOrder = this.repository.save(itemOrder);
+        return this.mapEntityToDto(savedItemOrder);
     }
+
 
     public void deleteItemOrder(long orderId, long id){
         ItemOrder itemOrder = this.repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Item-Order", "Id", id));
 
-        if (itemOrder.getOrder().getId() == orderId) { // confirmation that it contains the same orderId which they belong too.
+        if (itemOrder.getOrder().getId() == orderId) { // confirmation that it contains the same orderId which they belongs too.
             this.repository.deleteById(id);
         }
         else {
@@ -109,11 +104,7 @@ public class ItemOrderService extends BaseService<ItemOrder, ItemOrderDTO, ItemO
         entity.setPrice(item.getPrice() * dto.getQuantity()); // setting the total price of each item-order
         entity.setOrder(order);
 
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
+        if (dto.getId() == 0) {
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
         }

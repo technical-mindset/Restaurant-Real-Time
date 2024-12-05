@@ -34,19 +34,12 @@ public class OrderController {
                 this.orderService.getOrderById(id), true), HttpStatus.OK);
     }
 
-    // Add case
-    @PostMapping(Constants.ADD_UPDATE_URI)
-    public ResponseEntity<ApiResponse> addOrder(@Valid @RequestBody CompileOrderDTO compileOrderDTO){
-        return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_ADDED,
-                this.orderService.addOrder(compileOrderDTO), true),
-                HttpStatus.OK);
-    }
 
-    // Update case
-    @PutMapping(Constants.ADD_UPDATE_URI + "/{id}")
-    public ResponseEntity<ApiResponse> updateOrder(@Valid @RequestBody CompileOrderDTO compileOrderDTO, @PathVariable("id") long id){
+    // Add & Update case
+    @PostMapping(Constants.ADD_UPDATE_URI)
+    public ResponseEntity<ApiResponse> addUpdate(@Valid @RequestBody CompileOrderDTO compileOrderDTO){
         return new ResponseEntity<>(new ApiResponse(Constants.MESSAGE_UPDATED,
-                this.orderService.updateOrder(compileOrderDTO), true),
+                this.orderService.addUpdate(compileOrderDTO), true),
                 HttpStatus.OK);
     }
 

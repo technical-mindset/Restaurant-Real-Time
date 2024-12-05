@@ -3,7 +3,6 @@ package com.restaurant.backend.service;
 import com.restaurant.backend.dao.DealOrderRepository;
 import com.restaurant.backend.dao.DealRepository;
 import com.restaurant.backend.dao.OrderRepository;
-import com.restaurant.backend.exception.ResourceExist;
 import com.restaurant.backend.exception.ResourceNotFound;
 import com.restaurant.backend.model.Deal;
 import com.restaurant.backend.model.DealOrder;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -29,19 +29,35 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
 
 
     // Add Case
-    public DealOrderDTO addDealOrder(DealOrderDTO dto, long id){
-        if (this.repository.findById(dto.getId()).isPresent()) {
-            throw new ResourceExist("Deal-Order", "Id", dto.getId());
+    public DealOrderDTO addUpdate(DealOrderDTO dto, long id){
+        DealOrder dealOrder;
+        Optional<DealOrder> optionalItemOrder = this.repository.findById(dto.getId());
+
+        /** for add case */
+        if (dto.getId() == 0 && optionalItemOrder.isEmpty()) {
+            // adding | updating new Deal-Order for existing Order
+            dto.setCreatedAt(LocalDateTime.now());
+            dto.setCreatedBy(this.getUserName());
         }
+        /** for update case */
+        else if (dto.getId() > 0) {
+            if (optionalItemOrder.isPresent()) {
+                dealOrder = optionalItemOrder.get();
+
+                // adding | updating new Deal-Order for existing Order
+                dto.setCreatedAt(dealOrder.getCreatedAt());
+                dto.setCreatedBy(dealOrder.getCreatedBy());
+            }
+            else {
+                throw new ResourceNotFound("Deal Order", "Id", dto.getId());
+            }
+        }
+
         dto.setOrder(id);
-        // adding | updating new Deal-Order for existing Order
-        dto.setCreatedAt(LocalDateTime.now());
-        dto.setCreatedBy(this.getUserName());
+        dealOrder = this.mapDtoToEntity(dto);
 
-        DealOrder dealOrder = this.mapDtoToEntity(dto);
-
-        DealOrder dealOrder0 = this.repository.save(dealOrder);
-        return this.mapEntityToDto(dealOrder0);
+        DealOrder savedDealOrder = this.repository.save(dealOrder);
+        return this.mapEntityToDto(savedDealOrder);
     }
 
     // Update case
@@ -62,7 +78,7 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
         }
 
         // either it adds new deal-order into order
-        return this.addDealOrder(dto, id);
+        return this.addUpdate(dto, id);
     }
 
     public void deleteDealOrder(long orderId, long id){
@@ -107,11 +123,7 @@ public class DealOrderService extends BaseService<DealOrder, DealOrderDTO, DealO
         entity.setPrice(deal.getDiscountedPrice() * dto.getQuantity());
         entity.setOrder(order);
 
-        if (dto.getId() > 0) {
-            entity.setCreatedAt(dto.getCreatedAt());
-            entity.setCreatedBy(dto.getCreatedBy());
-        }
-        else {
+        if (dto.getId() == 0) {
             entity.setCreatedAt(LocalDateTime.now());
             entity.setCreatedBy(this.getUserName());
         }

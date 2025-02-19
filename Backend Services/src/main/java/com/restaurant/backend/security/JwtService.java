@@ -42,8 +42,19 @@ public class JwtService {
 
     //for retrieveing any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) throws JwtException {
-        return Jwts.parser()
-                .setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(getSignInKey()) // Ensure this is the same key used to sign JWT
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        }
+        catch (SignatureException e) {
+            throw new JwtException("Invalid JWT signature: " + e.getMessage()); // Custom handling
+        }
+        catch (JwtException e) {
+            throw new JwtException("Invalid JWT token: " + e.getMessage()); // Generic JWT error handling
+        }
     }
 
     //check if the token has expired

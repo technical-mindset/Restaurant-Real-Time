@@ -61,7 +61,7 @@ public class DealService extends BaseService<Deal, DealDTO, DealRepository> {
     }
 
 
-    // Get All Pageable Item Categories
+    // Get All Pageable Deal Categories
     public PaginationResponse getAllDeals(int pageNumber, int pageSize, String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
